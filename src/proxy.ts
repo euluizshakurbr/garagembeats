@@ -1,0 +1,75 @@
+import { createServerClient } from "@supabase/ssr";
+import { NextResponse, type NextRequest } from "next/server";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
+
+const PROTECTED_PATHS = ["/conta", "/admin", "/encomenda"];
+
+export async function proxy(request: NextRequest) {
+  let response = NextResponse.next({ request });
+
+  // Supabase ainda não foi configurado (.env.local com placeholders) —
+  // deixa o site funcionar normalmente, sem checar autenticação.
+  if (!isSupabaseConfigured()) {
+    return response;
+  }
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          );
+          response = NextResponse.next({ request });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
+          );
+        },
+      },
+    }
+  );
+
+  const { data, error } = await supabase.auth.getUser();
+
+  // Sessão quebrada (token expirado e o refresh também falhou) — limpa os
+  // cookies pra essa requisição seguir como visitante anônimo de verdade,
+  // em vez de manter um token inválido que faz toda consulta falhar.
+  if (error) {
+    await supabase.auth.signOut();
+  }
+
+  const path = request.nextUrl.pathname;
+  const isProtected = PROTECTED_PATHS.some((p) => path.startsWith(p));
+
+  if (isProtected && !data.user) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    url.searchParams.set("next", path);
+    return NextResponse.redirect(url);
+  }
+
+  if (path.startsWith("/admin") && data.user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("is_admin")
+      .eq("id", data.user.id)
+      .single();
+
+    if (!profile?.is_admin) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/conta";
+      return NextResponse.redirect(url);
+    }
+  }
+
+  return response;
+}
+
+export const config = {
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|mp3|wav)$).*)"],
+};
