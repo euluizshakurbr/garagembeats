@@ -171,6 +171,12 @@ export default function CatalogoGrid({
         </div>
       )}
 
+      {filtered.length > 0 && (
+        <p className="mt-6 text-sm text-[#555]">
+          {t("resultados", { n: filtered.length })}
+        </p>
+      )}
+
       {filtered.length === 0 ? (
         <p className="mt-10 text-center text-[#555]">{t("nenhumaTrilha")}</p>
       ) : visualizacao === "grade" ? (

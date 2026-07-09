@@ -4,6 +4,7 @@ import Logo from "@/components/Logo";
 import MobileNav from "@/components/MobileNav";
 import LocaleSwitcher from "@/components/LocaleSwitcher";
 import LogoutButton from "@/components/LogoutButton";
+import NavLink from "@/components/NavLink";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 
@@ -25,15 +26,27 @@ export default async function SiteHeader() {
         </Link>
 
         <nav className="hidden items-center gap-5 text-sm text-[#888] sm:flex">
-          <Link href="/catalogo" className="hover:text-white transition-colors">
+          <NavLink
+            href="/catalogo"
+            className="transition-colors hover:text-white"
+            activeClassName="!text-white font-semibold"
+          >
             {t("catalogo")}
-          </Link>
-          <Link href="/planos" className="hover:text-white transition-colors">
+          </NavLink>
+          <NavLink
+            href="/planos"
+            className="transition-colors hover:text-white"
+            activeClassName="!text-white font-semibold"
+          >
             {t("planos")}
-          </Link>
-          <Link href="/encomenda" className="hover:text-white transition-colors">
+          </NavLink>
+          <NavLink
+            href="/encomenda"
+            className="transition-colors hover:text-white"
+            activeClassName="!text-white font-semibold"
+          >
             {t("encomenda")}
-          </Link>
+          </NavLink>
           {isLoggedIn ? (
             <>
               <Link href="/conta" className="hover:text-white transition-colors">

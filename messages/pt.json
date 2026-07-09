@@ -141,6 +141,7 @@
     "statTrilhas": "trilhas no catálogo",
     "statDownloads": "downloads no total",
     "buscarPlaceholder": "Buscar trilha...",
+    "resultados": "{n, plural, one {# música} other {# músicas}}",
     "recemAdicionadas": "Recém-adicionadas",
     "emAltaOrdenacao": "Em alta (30 dias)",
     "maisBaixadas": "Mais baixadas",

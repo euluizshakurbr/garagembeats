@@ -141,6 +141,7 @@
     "statTrilhas": "tracks in the catalog",
     "statDownloads": "total downloads",
     "buscarPlaceholder": "Search track...",
+    "resultados": "{n, plural, one {# track} other {# tracks}}",
     "recemAdicionadas": "Recently added",
     "emAltaOrdenacao": "Trending (30 days)",
     "maisBaixadas": "Most downloaded",

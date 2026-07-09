@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import LogoutButton from "@/components/LogoutButton";
+import NavLink from "@/components/NavLink";
 
 export default function MobileNav({ isLoggedIn }: { isLoggedIn: boolean }) {
   const [open, setOpen] = useState(false);
@@ -40,27 +41,30 @@ export default function MobileNav({ isLoggedIn }: { isLoggedIn: boolean }) {
       {open && (
         <nav className="absolute inset-x-0 top-full border-b border-[#1a1a1a] bg-[#0A0A0A] px-6 py-4">
           <div className="flex flex-col gap-4 text-sm text-[#888]">
-            <Link
+            <NavLink
               href="/catalogo"
               onClick={() => setOpen(false)}
               className="hover:text-white"
+              activeClassName="!text-white font-semibold"
             >
               {t("catalogo")}
-            </Link>
-            <Link
+            </NavLink>
+            <NavLink
               href="/planos"
               onClick={() => setOpen(false)}
               className="hover:text-white"
+              activeClassName="!text-white font-semibold"
             >
               {t("planos")}
-            </Link>
-            <Link
+            </NavLink>
+            <NavLink
               href="/encomenda"
               onClick={() => setOpen(false)}
               className="hover:text-white"
+              activeClassName="!text-white font-semibold"
             >
               {t("encomenda")}
-            </Link>
+            </NavLink>
             {isLoggedIn ? (
               <>
                 <Link
