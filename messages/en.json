@@ -120,7 +120,7 @@
     "erroEmailNaoConfirmado": "Confirm your email before logging in. Check your inbox (and spam).",
     "erroSenhaCurta": "Password must be at least 6 characters.",
     "erroGenerico": "Something went wrong. Please try again in a moment.",
-    "contaCriadaTitulo": "Almost there! 🎉",
+    "contaCriadaTitulo": "Almost there!",
     "contaCriada": "We sent a confirmation email to {email}. Click the link in the email to activate your account and log in.",
     "reenviarEmail": "Didn't get it? Check your spam or try signing up again."
   },
@@ -164,7 +164,7 @@
   },
   "conta": {
     "titulo": "My account",
-    "ola": "Hi, {nome} 👋",
+    "ola": "Hi, {nome}",
     "sair": "Log out",
     "editarPerfil": "Edit my details",
     "nomeLabel": "Name",

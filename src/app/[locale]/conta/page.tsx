@@ -127,8 +127,29 @@ export default async function ContaPage({
         <div className="mx-auto max-w-3xl">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="min-w-0">
-              <h1 className="text-3xl font-bold text-white sm:text-4xl">
-                {profile.nome ? t("ola", { nome: profile.nome }) : t("titulo")}
+              <h1 className="flex items-center gap-2.5 text-3xl font-bold text-white sm:text-4xl">
+                {profile.nome && (
+                  <svg
+                    width="28"
+                    height="28"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#CC1111"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="shrink-0"
+                    aria-hidden="true"
+                  >
+                    <path d="M18 11V6a2 2 0 0 0-4 0v5" />
+                    <path d="M14 10V4a2 2 0 0 0-4 0v6" />
+                    <path d="M10 10.5V6a2 2 0 0 0-4 0v8" />
+                    <path d="M18 8a2 2 0 0 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15" />
+                  </svg>
+                )}
+                <span className="truncate">
+                  {profile.nome ? t("ola", { nome: profile.nome }) : t("titulo")}
+                </span>
               </h1>
               <p className="mt-2 text-[#888]">{userData.user!.email}</p>
             </div>
