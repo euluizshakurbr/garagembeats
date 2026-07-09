@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 
 export default function MobileNav({ isLoggedIn }: { isLoggedIn: boolean }) {
@@ -83,3 +83,4 @@ export default function MobileNav({ isLoggedIn }: { isLoggedIn: boolean }) {
     </div>
   );
 }
+

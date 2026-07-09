@@ -2,7 +2,7 @@
 
 import { useRef, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
-import { marcarEmProducao, entregarEncomenda } from "@/app/admin/pedidos/actions";
+import { marcarEmProducao, entregarEncomenda } from "@/app/[locale]/admin/pedidos/actions";
 import { CheckIcon } from "@/components/icons";
 
 export default function DeliverOrderForm({
@@ -93,3 +93,4 @@ export default function DeliverOrderForm({
     </div>
   );
 }
+

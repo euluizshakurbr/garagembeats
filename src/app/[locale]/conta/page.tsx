@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import SiteHeader from "@/components/SiteHeader";
 import DownloadButton from "@/components/DownloadButton";
@@ -11,7 +11,7 @@ import { getPlan, getPlanPreco } from "@/lib/plans";
 import {
   confirmarPagamentoEncomenda,
   confirmarAssinatura,
-} from "@/app/conta/confirmar-pagamento";
+} from "@/app/[locale]/conta/confirmar-pagamento";
 import type { DownloadLog, Encomenda, Favorite, Subscription } from "@/lib/types";
 
 export default async function ContaPage({

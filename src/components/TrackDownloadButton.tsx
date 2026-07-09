@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { baixarTrack } from "@/app/catalogo/actions";
+import { baixarTrack } from "@/app/[locale]/catalogo/actions";
 
 export default function TrackDownloadButton({
   trackId,
@@ -23,7 +23,7 @@ export default function TrackDownloadButton({
 
   async function handleClick() {
     if (!isLoggedIn) {
-      router.push("/login?next=/catalogo");
+      router.push({ pathname: "/login", query: { next: "/catalogo" } });
       return;
     }
 
@@ -62,3 +62,4 @@ export default function TrackDownloadButton({
     </div>
   );
 }
+

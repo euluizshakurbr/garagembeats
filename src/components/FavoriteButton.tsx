@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { toggleFavorito } from "@/app/catalogo/favorites-actions";
+import { toggleFavorito } from "@/app/[locale]/catalogo/favorites-actions";
 
 export default function FavoriteButton({
   trackId,
@@ -21,7 +21,7 @@ export default function FavoriteButton({
 
   async function handleClick() {
     if (!isLoggedIn) {
-      router.push("/login?next=/catalogo");
+      router.push({ pathname: "/login", query: { next: "/catalogo" } });
       return;
     }
 
@@ -51,3 +51,4 @@ export default function FavoriteButton({
     </button>
   );
 }
+

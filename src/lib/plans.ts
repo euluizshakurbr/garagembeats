@@ -1,6 +1,7 @@
 export interface Plan {
   id: "solo" | "squad" | "ilimitado";
   name: string;
+  nameEn: string;
   priceLabel: string;
   priceCents: number;
   priceLabelUsd: string;
@@ -14,6 +15,7 @@ export const PLANS: Plan[] = [
   {
     id: "solo",
     name: "Pista",
+    nameEn: "Track",
     priceLabel: "R$19,90",
     priceCents: 1990,
     priceLabelUsd: "US$4.99",
@@ -24,6 +26,7 @@ export const PLANS: Plan[] = [
   {
     id: "squad",
     name: "Garagem",
+    nameEn: "Garage",
     priceLabel: "R$39,90",
     priceCents: 3990,
     priceLabelUsd: "US$9.99",
@@ -35,6 +38,7 @@ export const PLANS: Plan[] = [
   {
     id: "ilimitado",
     name: "Pole Position",
+    nameEn: "Pole Position",
     priceLabel: "R$99,99",
     priceCents: 9999,
     priceLabelUsd: "US$24.99",
@@ -65,3 +69,4 @@ export function getEncomendaPreco(locale: string) {
     ? { ...ENCOMENDA_PRECO.usd, currency: "usd" as const }
     : { ...ENCOMENDA_PRECO.brl, currency: "brl" as const };
 }
+

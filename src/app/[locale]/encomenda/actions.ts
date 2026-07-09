@@ -2,8 +2,13 @@
 
 import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
-import { getStripeClient, isStripeConfigured } from "@/lib/stripe";
+import {
+  getStripeClient,
+  isStripeConfigured,
+  getPaymentMethodTypes,
+} from "@/lib/stripe";
 import { getPlan, getEncomendaPreco } from "@/lib/plans";
+import { localizedPath } from "@/i18n/paths";
 import type { Subscription } from "@/lib/types";
 
 interface NovaEncomenda {
@@ -99,8 +104,9 @@ export async function criarEncomenda(dados: NovaEncomenda) {
   try {
     const stripe = getStripeClient();
     const session = await stripe.checkout.sessions.create({
+      locale: locale === "en" ? "en" : "pt-BR",
       mode: "payment",
-      payment_method_types: preco.currency === "brl" ? ["card", "pix"] : ["card"],
+      payment_method_types: getPaymentMethodTypes(preco.currency),
       customer_email: dados.email || undefined,
       line_items: [
         {
@@ -109,7 +115,10 @@ export async function criarEncomenda(dados: NovaEncomenda) {
             currency: preco.currency,
             unit_amount: preco.cents,
             product_data: {
-              name: "Música personalizada — Garagem Beats",
+              name:
+                locale === "en"
+                  ? "Custom song — Garagem Beats"
+                  : "Música personalizada — Garagem Beats",
             },
           },
         },
@@ -118,8 +127,8 @@ export async function criarEncomenda(dados: NovaEncomenda) {
         tipo: "encomenda",
         encomendaId: encomenda.id,
       },
-      success_url: `${appUrl}/conta?pedido=${encomenda.id}`,
-      cancel_url: `${appUrl}/encomenda?erro=pagamento`,
+      success_url: `${appUrl}${localizedPath("/conta", locale)}?pedido=${encomenda.id}`,
+      cancel_url: `${appUrl}${localizedPath("/encomenda", locale)}?erro=pagamento`,
     });
 
     await supabase

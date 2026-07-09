@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { assinarPlano } from "@/app/planos/actions";
+import { assinarPlano } from "@/app/[locale]/planos/actions";
 
 export default function SubscribeButton({
   planId,
@@ -23,7 +23,7 @@ export default function SubscribeButton({
 
   async function handleClick() {
     if (!isLoggedIn) {
-      router.push("/login?next=/planos");
+      router.push({ pathname: "/login", query: { next: "/planos" } });
       return;
     }
 
@@ -66,3 +66,4 @@ export default function SubscribeButton({
     </div>
   );
 }
+

@@ -1,7 +1,8 @@
 "use client";
 
 import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
-import { subirMusica } from "@/app/admin/actions";
+import { subirMusica } from "@/app/[locale]/admin/actions";
+import { createClient } from "@/lib/supabase/client";
 import { ESTILOS } from "@/lib/estilos";
 import { compressImage } from "@/lib/compressImage";
 
@@ -35,14 +36,57 @@ export default function UploadTrackForm() {
     setErrorMessage("");
 
     const formData = new FormData(event.currentTarget);
-
+    const title = String(formData.get("title") || "");
+    const brand = String(formData.get("brand") || "");
+    const estilo = String(formData.get("estilo") || "");
+    const audioFile = formData.get("audio") as File | null;
     const coverFile = formData.get("cover") as File | null;
-    if (coverFile && coverFile.size > 0) {
-      const compressed = await compressImage(coverFile);
-      formData.set("cover", compressed);
+
+    if (!title || !brand || !audioFile || audioFile.size === 0) {
+      setStatus("error");
+      setErrorMessage("Preencha todos os campos obrigatórios.");
+      return;
     }
 
-    const result = await subirMusica(formData);
+    const supabase = createClient();
+
+    // Envia o áudio DIRETO pro Supabase Storage (sem passar pelo servidor Next,
+    // que tem limite de 20MB). O usuário é admin, então a RLS do bucket permite.
+    const audioExt = audioFile.name.split(".").pop() || "mp3";
+    const audioPath = `${crypto.randomUUID()}.${audioExt}`;
+    const { error: audioError } = await supabase.storage
+      .from("tracks-audio")
+      .upload(audioPath, audioFile);
+    if (audioError) {
+      setStatus("error");
+      setErrorMessage(`Falha ao enviar o áudio: ${audioError.message}`);
+      return;
+    }
+
+    // Capa (opcional) — comprime e envia direto também.
+    let coverPath: string | null = null;
+    if (coverFile && coverFile.size > 0) {
+      const compressed = await compressImage(coverFile);
+      coverPath = `${crypto.randomUUID()}.jpg`;
+      const { error: coverError } = await supabase.storage
+        .from("tracks-covers")
+        .upload(coverPath, compressed);
+      if (coverError) {
+        setStatus("error");
+        setErrorMessage(`Falha ao enviar a capa: ${coverError.message}`);
+        return;
+      }
+    }
+
+    // Grava só os metadados no catálogo (payload pequeno).
+    const result = await subirMusica({
+      title,
+      brand,
+      estilo,
+      audioPath,
+      coverPath,
+      duration,
+    });
 
     if (result.error) {
       setStatus("error");
@@ -167,3 +211,4 @@ export default function UploadTrackForm() {
 
 const inputClass =
   "w-full rounded-xl border border-[#1a1a1a] bg-[#0A0A0A] px-4 py-2.5 text-white placeholder-[#555] outline-none transition-colors focus:border-[#CC1111]";
+

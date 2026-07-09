@@ -2,17 +2,20 @@
 
 import { useLocale } from "next-intl";
 import { useTransition } from "react";
-import { setLocale } from "@/i18n/actions";
-import type { Locale } from "@/i18n/request";
+import { usePathname, useRouter } from "@/i18n/navigation";
+import { routing } from "@/i18n/routing";
 
 export default function LocaleSwitcher() {
   const locale = useLocale();
+  const pathname = usePathname();
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  function handleChange(next: Locale) {
+  function handleChange(next: (typeof routing.locales)[number]) {
     if (next === locale) return;
     startTransition(() => {
-      setLocale(next);
+      // Mantém a mesma página, apenas troca o locale (e o slug traduzido).
+      router.replace(pathname, { locale: next });
     });
   }
 

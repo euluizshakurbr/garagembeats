@@ -156,3 +156,4 @@ export default function AuthForm({
 
 const inputClass =
   "w-full rounded-xl border border-[#1a1a1a] bg-[#0A0A0A] px-4 py-2.5 text-white placeholder-[#555] outline-none transition-colors focus:border-[#CC1111]";
+

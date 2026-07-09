@@ -24,3 +24,4 @@ export async function compressImage(file: File): Promise<File> {
   const newName = file.name.replace(/\.[^.]+$/, "") + ".jpg";
   return new File([blob], newName, { type: "image/jpeg" });
 }
+

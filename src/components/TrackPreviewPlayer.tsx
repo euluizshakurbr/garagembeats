@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { gerarPreviewUrl } from "@/app/catalogo/preview-actions";
+import { gerarPreviewUrl } from "@/app/[locale]/catalogo/preview-actions";
 import { registerPlayingAudio, unregisterPlayingAudio } from "@/lib/audioController";
 
 const PREVIEW_SECONDS = 60;
@@ -107,3 +107,4 @@ export default function TrackPreviewPlayer({
     </div>
   );
 }
+

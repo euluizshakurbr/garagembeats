@@ -53,3 +53,4 @@ export interface Encomenda {
   stripe_payment_id: string | null;
   created_at: string;
 }
+

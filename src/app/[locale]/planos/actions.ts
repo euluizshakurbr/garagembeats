@@ -3,7 +3,12 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getPlan, getPlanPreco } from "@/lib/plans";
-import { getStripeClient, isStripeConfigured } from "@/lib/stripe";
+import {
+  getStripeClient,
+  isStripeConfigured,
+  getPaymentMethodTypes,
+} from "@/lib/stripe";
+import { localizedPath } from "@/i18n/paths";
 
 export async function assinarPlano(planId: string) {
   const t = await getTranslations("errors");
@@ -29,8 +34,9 @@ export async function assinarPlano(planId: string) {
   try {
     const stripe = getStripeClient();
     const session = await stripe.checkout.sessions.create({
+      locale: locale === "en" ? "en" : "pt-BR",
       mode: "payment",
-      payment_method_types: preco.currency === "brl" ? ["card", "pix"] : ["card"],
+      payment_method_types: getPaymentMethodTypes(preco.currency),
       line_items: [
         {
           quantity: 1,
@@ -38,7 +44,10 @@ export async function assinarPlano(planId: string) {
             currency: preco.currency,
             unit_amount: preco.cents,
             product_data: {
-              name: `Assinatura Garagem Beats — ${plan.name}`,
+              name:
+                locale === "en"
+                  ? `Garagem Beats Subscription — ${plan.nameEn}`
+                  : `Assinatura Garagem Beats — ${plan.name}`,
             },
           },
         },
@@ -48,23 +57,13 @@ export async function assinarPlano(planId: string) {
         userId: userData.user.id,
         planId: plan.id,
       },
-      success_url: `${appUrl}/conta?plano=${plan.id}`,
-      cancel_url: `${appUrl}/planos?erro=pagamento`,
+      success_url: `${appUrl}${localizedPath("/conta", locale)}?plano=${plan.id}`,
+      cancel_url: `${appUrl}${localizedPath("/planos", locale)}?erro=pagamento`,
     });
 
-    // Marca a assinatura como "pending" até o pagamento ser confirmado
-    // (via webhook ou na volta do checkout).
-    const { error: upsertError } = await supabase.from("subscriptions").upsert({
-      user_id: userData.user.id,
-      plan: plan.id,
-      status: "pending",
-      stripe_session_id: session.id,
-    });
-
-    if (upsertError) {
-      return { error: t("erroIniciarAssinatura") };
-    }
-
+    // A assinatura é ativada pelo webhook do Stripe após o pagamento
+    // ser confirmado (ver src/lib/ativarAssinatura.ts). Não gravamos uma
+    // linha "pending" aqui porque o schema só aceita 'active'/'canceled'.
     return { checkoutUrl: session.url };
   } catch (err) {
     console.error("Erro ao criar sessão de checkout da assinatura:", err);

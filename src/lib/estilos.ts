@@ -7,3 +7,4 @@ export const ESTILOS = [
   { value: "rap", label: "Rap" },
   { value: "outro", label: "Outro" },
 ];
+

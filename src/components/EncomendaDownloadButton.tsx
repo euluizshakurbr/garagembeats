@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { gerarLinkEncomenda } from "@/app/conta/actions";
+import { gerarLinkEncomenda } from "@/app/[locale]/conta/actions";
 
 export default function EncomendaDownloadButton({
   audioPath,
@@ -40,3 +40,4 @@ export default function EncomendaDownloadButton({
     </div>
   );
 }
+

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { gerarLinkDownload } from "@/app/conta/actions";
+import { gerarLinkDownload } from "@/app/[locale]/conta/actions";
 
 export default function DownloadButton({
   audioPath,
@@ -40,3 +40,4 @@ export default function DownloadButton({
     </div>
   );
 }
+

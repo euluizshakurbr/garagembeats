@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { criarEncomenda } from "@/app/encomenda/actions";
+import { criarEncomenda } from "@/app/[locale]/encomenda/actions";
 import { ESTILOS } from "@/lib/estilos";
 import { getEncomendaPreco } from "@/lib/plans";
 import { CheckIcon } from "@/components/icons";
@@ -217,3 +217,4 @@ function Field({
     </div>
   );
 }
+

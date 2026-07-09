@@ -16,3 +16,4 @@ export function unregisterPlayingAudio(audio: HTMLAudioElement) {
     current = null;
   }
 }
+
