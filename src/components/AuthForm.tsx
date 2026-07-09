@@ -19,17 +19,22 @@ export default function AuthForm({
   const [whatsapp, setWhatsapp] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "error" | "confirmar"
+  >("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
   function traduzErro(message: string) {
-    if (message.includes("Invalid login credentials")) {
-      return t("erroCredenciais");
-    }
-    if (message.includes("User already registered")) {
+    const m = message.toLowerCase();
+    if (m.includes("invalid login credentials")) return t("erroCredenciais");
+    if (m.includes("email not confirmed")) return t("erroEmailNaoConfirmado");
+    if (m.includes("already registered") || m.includes("already exists")) {
       return t("erroJaExiste");
     }
-    return message;
+    if (m.includes("password should be at least") || m.includes("at least 6")) {
+      return t("erroSenhaCurta");
+    }
+    return t("erroGenerico");
   }
 
   async function handleSubmit(event: FormEvent) {
@@ -38,14 +43,28 @@ export default function AuthForm({
     setErrorMessage("");
 
     const supabase = createClient();
-    const { error } =
-      mode === "login"
-        ? await supabase.auth.signInWithPassword({ email, password: senha })
-        : await supabase.auth.signUp({
-            email,
-            password: senha,
-            options: { data: { nome, whatsapp } },
-          });
+
+    if (mode === "login") {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password: senha,
+      });
+      if (error) {
+        setStatus("error");
+        setErrorMessage(traduzErro(error.message));
+        return;
+      }
+      router.push(redirectTo);
+      router.refresh();
+      return;
+    }
+
+    // Cadastro
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password: senha,
+      options: { data: { nome, whatsapp } },
+    });
 
     if (error) {
       setStatus("error");
@@ -53,8 +72,25 @@ export default function AuthForm({
       return;
     }
 
+    // Sem sessão = confirmação de e-mail está ativada no Supabase.
+    if (!data.session) {
+      setStatus("confirmar");
+      return;
+    }
+
     router.push(redirectTo);
     router.refresh();
+  }
+
+  // Tela de "confirme seu e-mail" após o cadastro
+  if (status === "confirmar") {
+    return (
+      <div className="w-full max-w-sm rounded-2xl border border-[#CC1111]/40 bg-[#1a0808] p-6 text-center sm:p-8">
+        <h1 className="text-xl font-bold text-white">{t("contaCriadaTitulo")}</h1>
+        <p className="mt-3 text-sm text-[#ddd]">{t("contaCriada", { email })}</p>
+        <p className="mt-4 text-xs text-[#888]">{t("reenviarEmail")}</p>
+      </div>
+    );
   }
 
   return (

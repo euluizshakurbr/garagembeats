@@ -115,7 +115,13 @@
     "criarAgora": "Create one now",
     "jaTemConta": "Already have an account?",
     "erroCredenciais": "Incorrect email or password.",
-    "erroJaExiste": "An account with this email already exists."
+    "erroJaExiste": "An account with this email already exists. Try logging in.",
+    "erroEmailNaoConfirmado": "Confirm your email before logging in. Check your inbox (and spam).",
+    "erroSenhaCurta": "Password must be at least 6 characters.",
+    "erroGenerico": "Something went wrong. Please try again in a moment.",
+    "contaCriadaTitulo": "Almost there! 🎉",
+    "contaCriada": "We sent a confirmation email to {email}. Click the link in the email to activate your account and log in.",
+    "reenviarEmail": "Didn't get it? Check your spam or try signing up again."
   },
   "estilos": {
     "sertanejo": "Sertanejo",

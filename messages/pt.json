@@ -115,7 +115,13 @@
     "criarAgora": "Criar agora",
     "jaTemConta": "Já tem conta?",
     "erroCredenciais": "E-mail ou senha incorretos.",
-    "erroJaExiste": "Já existe uma conta com esse e-mail."
+    "erroJaExiste": "Já existe uma conta com esse e-mail. Tente entrar.",
+    "erroEmailNaoConfirmado": "Confirme seu e-mail antes de entrar. Veja sua caixa de entrada (e o spam).",
+    "erroSenhaCurta": "A senha precisa ter pelo menos 6 caracteres.",
+    "erroGenerico": "Algo deu errado. Tente novamente em instantes.",
+    "contaCriadaTitulo": "Quase lá! 🎉",
+    "contaCriada": "Enviamos um e-mail de confirmação para {email}. Clique no link do e-mail para ativar sua conta e poder entrar.",
+    "reenviarEmail": "Não recebeu? Verifique o spam ou tente cadastrar novamente."
   },
   "estilos": {
     "sertanejo": "Sertanejo",
