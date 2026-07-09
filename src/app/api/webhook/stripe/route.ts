@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
+import type Stripe from "stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getStripeClient, isStripeConfigured } from "@/lib/stripe";
-import { ativarAssinatura } from "@/lib/ativarAssinatura";
+import { syncSubscriptionFromStripe } from "@/lib/syncAssinatura";
 
 export async function POST(request: Request) {
   if (!isStripeConfigured()) {
@@ -18,7 +19,7 @@ export async function POST(request: Request) {
 
   const stripe = getStripeClient();
 
-  let event;
+  let event: Stripe.Event;
   try {
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
   } catch (err) {
@@ -26,32 +27,44 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Assinatura inválida" }, { status: 400 });
   }
 
-  if (event.type !== "checkout.session.completed") {
-    return NextResponse.json({ ok: true });
-  }
-
-  const session = event.data.object as {
-    id: string;
-    payment_intent: string | null;
-    metadata: Record<string, string> | null;
-  };
-
-  const metadata = session.metadata;
-  if (!metadata) {
-    return NextResponse.json({ ok: true });
-  }
-
   try {
     const supabase = createAdminClient();
-    const paymentId = session.payment_intent ?? session.id;
 
-    if (metadata.tipo === "assinatura") {
-      await ativarAssinatura(supabase, metadata.userId, metadata.planId, paymentId);
-    } else if (metadata.tipo === "encomenda") {
-      await supabase
-        .from("encomendas")
-        .update({ pagamento_confirmado: true, stripe_payment_id: paymentId })
-        .eq("id", metadata.encomendaId);
+    switch (event.type) {
+      // Criação, renovação mensal, troca de plano, cancelamento agendado.
+      case "customer.subscription.created":
+      case "customer.subscription.updated":
+      case "customer.subscription.deleted": {
+        await syncSubscriptionFromStripe(
+          supabase,
+          event.data.object as Stripe.Subscription
+        );
+        break;
+      }
+
+      // Ativação imediata na volta do checkout (assinatura ou encomenda).
+      case "checkout.session.completed": {
+        const session = event.data.object as Stripe.Checkout.Session;
+
+        if (session.mode === "subscription" && session.subscription) {
+          const subId =
+            typeof session.subscription === "string"
+              ? session.subscription
+              : session.subscription.id;
+          const subscription = await stripe.subscriptions.retrieve(subId);
+          await syncSubscriptionFromStripe(supabase, subscription);
+        } else if (session.metadata?.tipo === "encomenda") {
+          const paymentId = String(session.payment_intent ?? session.id);
+          await supabase
+            .from("encomendas")
+            .update({ pagamento_confirmado: true, stripe_payment_id: paymentId })
+            .eq("id", session.metadata.encomendaId);
+        }
+        break;
+      }
+
+      default:
+        break;
     }
 
     return NextResponse.json({ ok: true });

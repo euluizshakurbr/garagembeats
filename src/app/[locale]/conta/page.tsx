@@ -4,6 +4,7 @@ import SiteHeader from "@/components/SiteHeader";
 import DownloadButton from "@/components/DownloadButton";
 import TrackDownloadButton from "@/components/TrackDownloadButton";
 import EncomendaDownloadButton from "@/components/EncomendaDownloadButton";
+import ManageSubscriptionButton from "@/components/ManageSubscriptionButton";
 import SupabaseSetupNotice from "@/components/SupabaseSetupNotice";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
@@ -17,7 +18,7 @@ import type { DownloadLog, Encomenda, Favorite, Subscription } from "@/lib/types
 export default async function ContaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ pedido?: string; plano?: string }>;
+  searchParams: Promise<{ pedido?: string; session_id?: string }>;
 }) {
   const t = await getTranslations("conta");
   const locale = await getLocale();
@@ -32,9 +33,12 @@ export default async function ContaPage({
     entregue: t("statusEntregue"),
   };
 
-  const { pedido, plano } = await searchParams;
+  const { pedido, session_id } = await searchParams;
   if (pedido) {
     await confirmarPagamentoEncomenda(pedido);
+  }
+  if (session_id) {
+    await confirmarAssinatura(session_id);
   }
 
   if (!isSupabaseConfigured()) {
@@ -55,10 +59,6 @@ export default async function ContaPage({
 
   const supabase = await createClient();
   const { data: userData } = await supabase.auth.getUser();
-
-  if (plano) {
-    await confirmarAssinatura(userData.user!.id, plano);
-  }
 
   const { data: subscriptionData } = await supabase
     .from("subscriptions")
@@ -117,7 +117,7 @@ export default async function ContaPage({
             </div>
           )}
 
-          {plano && (
+          {session_id && (
             <div className="mt-6 rounded-xl border border-[#CC1111]/40 bg-[#1a0808] p-4 text-sm text-white">
               {t("pagamentoAssinaturaRecebido")}
             </div>
@@ -147,12 +147,19 @@ export default async function ContaPage({
                         limite: plan.downloadLimit,
                       })}
                 </p>
-                <Link
-                  href="/planos"
-                  className="mt-4 inline-flex rounded-xl border border-[#333] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:border-[#555]"
-                >
-                  {t("trocarPlano")}
-                </Link>
+                {subscription?.current_period_end && (
+                  <p className="mt-1 text-xs text-[#555]">
+                    {locale === "en" ? "Renews on " : "Renova em "}
+                    {formatDate(subscription.current_period_end)}
+                  </p>
+                )}
+                <ManageSubscriptionButton
+                  label={
+                    locale === "en"
+                      ? "Manage subscription"
+                      : "Gerenciar assinatura"
+                  }
+                />
               </>
             ) : (
               <>

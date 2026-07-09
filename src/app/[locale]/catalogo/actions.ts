@@ -38,7 +38,12 @@ export async function baixarTrack(
       .maybeSingle();
 
     const subscription = subscriptionData as Subscription | null;
-    if (!subscription) {
+    // Rede de segurança: além do status 'active', exige que o período ainda
+    // esteja válido (caso um webhook de expiração tenha se perdido).
+    const periodValido =
+      !subscription?.current_period_end ||
+      new Date(subscription.current_period_end).getTime() > Date.now();
+    if (!subscription || !periodValido) {
       return { error: t("assineParaBaixar"), needsPlan: true };
     }
 

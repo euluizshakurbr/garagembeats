@@ -1,6 +1,7 @@
 {
   "errors": {
     "planoInvalido": "Plano inválido.",
+    "jaTemPlanoAtivo": "Você já tem uma assinatura ativa. Gerencie ou troque de plano em Minha conta.",
     "pagamentoNaoConfigurado": "Pagamento ainda não configurado no servidor. Avise o administrador.",
     "loginParaAssinar": "Você precisa entrar na sua conta para assinar.",
     "erroIniciarAssinatura": "Não foi possível iniciar a assinatura. Tente novamente.",

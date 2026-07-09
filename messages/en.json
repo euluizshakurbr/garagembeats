@@ -1,6 +1,7 @@
 {
   "errors": {
     "planoInvalido": "Invalid plan.",
+    "jaTemPlanoAtivo": "You already have an active subscription. Manage or change your plan in My account.",
     "pagamentoNaoConfigurado": "Payment isn't configured on the server yet. Let the admin know.",
     "loginParaAssinar": "You need to log in to subscribe.",
     "erroIniciarAssinatura": "Couldn't start your subscription. Please try again.",

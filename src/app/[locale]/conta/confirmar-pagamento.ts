@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getStripeClient, isStripeConfigured } from "@/lib/stripe";
-import { ativarAssinatura } from "@/lib/ativarAssinatura";
+import { syncSubscriptionFromStripe } from "@/lib/syncAssinatura";
 
 // Fallback pro caso do webhook não alcançar o servidor (ex: ambiente local)
 // — confere o pagamento direto na API da Stripe quando o cliente volta do
@@ -45,36 +45,28 @@ export async function confirmarPagamentoEncomenda(encomendaId: string) {
   }
 }
 
-export async function confirmarAssinatura(userId: string, planId: string) {
+// Fallback da assinatura recorrente: recebe o session_id do checkout,
+// busca a assinatura no Stripe e sincroniza nossa tabela.
+export async function confirmarAssinatura(sessionId: string) {
   if (!isStripeConfigured()) return;
 
   const supabase = createAdminClient();
-  const { data: subscription } = await supabase
-    .from("subscriptions")
-    .select("status, stripe_session_id")
-    .eq("user_id", userId)
-    .maybeSingle();
-
-  if (subscription?.status === "active" || !subscription?.stripe_session_id) {
-    return;
-  }
-
   try {
     const stripe = getStripeClient();
-    const session = await stripe.checkout.sessions.retrieve(
-      subscription.stripe_session_id
-    );
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
 
-    if (session.payment_status !== "paid") return;
+    if (session.mode !== "subscription" || !session.subscription) return;
+    if (session.payment_status === "unpaid") return;
 
-    await ativarAssinatura(
-      supabase,
-      userId,
-      planId,
-      String(session.payment_intent ?? session.id)
-    );
+    const subId =
+      typeof session.subscription === "string"
+        ? session.subscription
+        : session.subscription.id;
+    const subscription = await stripe.subscriptions.retrieve(subId);
+
+    await syncSubscriptionFromStripe(supabase, subscription);
     revalidatePath("/conta");
   } catch (err) {
-    console.error("Erro ao confirmar pagamento da assinatura:", err);
+    console.error("Erro ao confirmar a assinatura:", err);
   }
 }

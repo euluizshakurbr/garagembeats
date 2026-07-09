@@ -19,11 +19,22 @@ export interface Favorite {
 export interface Subscription {
   user_id: string;
   plan: "solo" | "squad" | "ilimitado";
-  status: "active" | "canceled";
+  status:
+    | "active"
+    | "trialing"
+    | "past_due"
+    | "canceled"
+    | "unpaid"
+    | "incomplete"
+    | "incomplete_expired"
+    | "paused"
+    | "pending";
   current_period_start: string;
   current_period_end: string;
   stripe_session_id: string | null;
   stripe_payment_id: string | null;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
   created_at: string;
 }
 
