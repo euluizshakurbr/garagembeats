@@ -143,20 +143,25 @@ export default async function Home() {
                 </Link>
               </div>
             ) : (
-              <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                <Link
-                  href="/cadastro"
-                  className="inline-flex items-center justify-center rounded-xl bg-[#CC1111] px-8 py-3.5 font-semibold text-white transition-colors hover:bg-[#aa0e0e]"
-                >
-                  {t("criarConta")}
-                </Link>
-                <Link
-                  href="/login"
-                  className="inline-flex items-center justify-center rounded-xl border border-[#333] px-8 py-3.5 font-semibold text-white transition-colors hover:border-[#555]"
-                >
-                  {t("jaTenhoConta")}
-                </Link>
-              </div>
+              <>
+                <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                  <Link
+                    href="/cadastro"
+                    className="inline-flex items-center justify-center rounded-xl bg-[#CC1111] px-8 py-3.5 font-semibold text-white transition-colors hover:bg-[#aa0e0e]"
+                  >
+                    {t("criarConta")}
+                  </Link>
+                  <Link
+                    href="/login"
+                    className="inline-flex items-center justify-center rounded-xl border border-[#333] px-8 py-3.5 font-semibold text-white transition-colors hover:border-[#555]"
+                  >
+                    {t("jaTenhoConta")}
+                  </Link>
+                </div>
+                <p className="mt-4 text-sm font-semibold text-[#CC1111]">
+                  {t("gratisHook")}
+                </p>
+              </>
             )}
 
             <p className="mt-4 flex items-center justify-center gap-1.5 text-xs text-[#555]">
