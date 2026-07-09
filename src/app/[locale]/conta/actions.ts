@@ -1,10 +1,127 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { getLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
-import { getStripeClient, isStripeConfigured } from "@/lib/stripe";
+import { createAdminClient } from "@/lib/supabase/admin";
+import {
+  getStripeClient,
+  isStripeConfigured,
+  getPaymentMethodTypes,
+} from "@/lib/stripe";
+import { getEncomendaPreco } from "@/lib/plans";
 import { localizedPath } from "@/i18n/paths";
 import type { Subscription } from "@/lib/types";
+
+// Atualiza nome/WhatsApp do perfil e, opcionalmente, a senha.
+export async function atualizarConta(dados: {
+  nome: string;
+  whatsapp: string;
+  novaSenha?: string;
+}) {
+  const supabase = await createClient();
+  const { data: userData } = await supabase.auth.getUser();
+  if (!userData.user) {
+    return { error: "Faça login para atualizar seus dados." };
+  }
+
+  if (!dados.nome.trim() || !dados.whatsapp.trim()) {
+    return { error: "Preencha nome e WhatsApp." };
+  }
+
+  if (dados.novaSenha) {
+    if (dados.novaSenha.length < 6) {
+      return { error: "A nova senha precisa ter pelo menos 6 caracteres." };
+    }
+    const { error: senhaError } = await supabase.auth.updateUser({
+      password: dados.novaSenha,
+    });
+    if (senhaError) {
+      return { error: "Não foi possível trocar a senha. Tente novamente." };
+    }
+  }
+
+  // Perfil: usa o client admin (a tabela profiles não tem policy de UPDATE
+  // pro usuário). A autorização é a checagem de sessão acima.
+  const admin = createAdminClient();
+  const { error: perfilError } = await admin
+    .from("profiles")
+    .update({ nome: dados.nome.trim(), whatsapp: dados.whatsapp.trim() })
+    .eq("id", userData.user.id);
+
+  if (perfilError) {
+    return { error: "Não foi possível salvar seus dados. Tente novamente." };
+  }
+
+  revalidatePath("/conta");
+  return { ok: true };
+}
+
+// Recria o checkout de uma encomenda ainda não paga (recupera pedido abandonado).
+export async function pagarEncomenda(encomendaId: string) {
+  if (!isStripeConfigured()) {
+    return { error: "Pagamento não configurado." };
+  }
+
+  const supabase = await createClient();
+  const { data: userData } = await supabase.auth.getUser();
+  if (!userData.user) {
+    return { error: "Faça login para pagar." };
+  }
+
+  const { data: encomenda } = await supabase
+    .from("encomendas")
+    .select("*")
+    .eq("id", encomendaId)
+    .eq("user_id", userData.user.id)
+    .maybeSingle();
+
+  if (!encomenda || encomenda.pagamento_confirmado) {
+    return { error: "Pedido não encontrado ou já pago." };
+  }
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const locale = await getLocale();
+  const preco = getEncomendaPreco(locale);
+
+  try {
+    const stripe = getStripeClient();
+    const session = await stripe.checkout.sessions.create({
+      locale: locale === "en" ? "en" : "pt-BR",
+      mode: "payment",
+      payment_method_types: getPaymentMethodTypes(preco.currency),
+      customer_email: encomenda.email || undefined,
+      line_items: [
+        {
+          quantity: 1,
+          price_data: {
+            currency: preco.currency,
+            unit_amount: preco.cents,
+            product_data: {
+              name:
+                locale === "en"
+                  ? "Custom song — Garagem Beats"
+                  : "Música personalizada — Garagem Beats",
+            },
+          },
+        },
+      ],
+      metadata: { tipo: "encomenda", encomendaId: encomenda.id },
+      success_url: `${appUrl}${localizedPath("/conta", locale)}?pedido=${encomenda.id}`,
+      cancel_url: `${appUrl}${localizedPath("/conta", locale)}`,
+    });
+
+    await supabase
+      .from("encomendas")
+      .update({ stripe_session_id: session.id })
+      .eq("id", encomenda.id);
+
+    return { checkoutUrl: session.url };
+  } catch (err) {
+    console.error("Erro ao recriar checkout da encomenda:", err);
+    return { error: "Não foi possível iniciar o pagamento. Tente novamente." };
+  }
+}
 
 export async function gerarLinkDownload(audioPath: string, title: string) {
   const supabase = await createClient();

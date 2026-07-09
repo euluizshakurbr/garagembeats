@@ -5,6 +5,9 @@ import DownloadButton from "@/components/DownloadButton";
 import TrackDownloadButton from "@/components/TrackDownloadButton";
 import EncomendaDownloadButton from "@/components/EncomendaDownloadButton";
 import ManageSubscriptionButton from "@/components/ManageSubscriptionButton";
+import LogoutButton from "@/components/LogoutButton";
+import PerfilForm from "@/components/PerfilForm";
+import PayOrderButton from "@/components/PayOrderButton";
 import SupabaseSetupNotice from "@/components/SupabaseSetupNotice";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
@@ -33,6 +36,12 @@ export default async function ContaPage({
     entregue: t("statusEntregue"),
   };
 
+  const STATUS_STYLE: Record<Encomenda["status"], string> = {
+    pendente: "bg-amber-500/15 text-amber-400",
+    em_producao: "bg-blue-500/15 text-blue-400",
+    entregue: "bg-green-500/15 text-green-400",
+  };
+
   const { pedido, session_id } = await searchParams;
   if (pedido) {
     await confirmarPagamentoEncomenda(pedido);
@@ -59,6 +68,16 @@ export default async function ContaPage({
 
   const supabase = await createClient();
   const { data: userData } = await supabase.auth.getUser();
+
+  const { data: profileData } = await supabase
+    .from("profiles")
+    .select("nome, whatsapp")
+    .eq("id", userData.user!.id)
+    .maybeSingle();
+  const profile = (profileData ?? {}) as {
+    nome?: string | null;
+    whatsapp?: string | null;
+  };
 
   const { data: subscriptionData } = await supabase
     .from("subscriptions")
@@ -106,10 +125,23 @@ export default async function ContaPage({
       <SiteHeader />
       <main className="flex-1 px-6 py-16">
         <div className="mx-auto max-w-3xl">
-          <h1 className="text-3xl font-bold text-white sm:text-4xl">
-            {t("titulo")}
-          </h1>
-          <p className="mt-2 text-[#888]">{userData.user!.email}</p>
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h1 className="text-3xl font-bold text-white sm:text-4xl">
+                {profile.nome ? t("ola", { nome: profile.nome }) : t("titulo")}
+              </h1>
+              <p className="mt-2 text-[#888]">{userData.user!.email}</p>
+            </div>
+            <LogoutButton
+              label={t("sair")}
+              className="shrink-0 rounded-xl border border-[#333] px-4 py-2 text-sm font-semibold text-[#888] transition-colors hover:border-[#555] hover:text-white"
+            />
+          </div>
+
+          <PerfilForm
+            nomeInicial={profile.nome ?? ""}
+            whatsappInicial={profile.whatsapp ?? ""}
+          />
 
           {pedido && (
             <div className="mt-6 rounded-xl border border-[#CC1111]/40 bg-[#1a0808] p-4 text-sm text-white">
@@ -139,14 +171,30 @@ export default async function ContaPage({
                   {plan.name} — {preco.label}
                   {locale === "en" ? "/mo" : "/mês"}
                 </p>
-                <p className="mt-1 text-sm text-[#888]">
-                  {plan.downloadLimit === null
-                    ? t("downloadsUsadosIlimitado", { usados: downloadsUsed })
-                    : t("downloadsUsadosLimite", {
-                        usados: downloadsUsed,
-                        limite: plan.downloadLimit,
+                {plan.downloadLimit === null ? (
+                  <p className="mt-1 text-sm text-[#888]">
+                    {t("downloadsUsadosIlimitado", { usados: downloadsUsed })}
+                  </p>
+                ) : (
+                  <div className="mt-3">
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-[#1a1a1a]">
+                      <div
+                        className="h-full rounded-full bg-[#CC1111] transition-all"
+                        style={{
+                          width: `${Math.min(
+                            100,
+                            (downloadsUsed / plan.downloadLimit) * 100
+                          )}%`,
+                        }}
+                      />
+                    </div>
+                    <p className="mt-1.5 text-xs text-[#888]">
+                      {t("downloadsRestantes", {
+                        n: Math.max(0, plan.downloadLimit - downloadsUsed),
                       })}
-                </p>
+                    </p>
+                  </div>
+                )}
                 {subscription?.current_period_end && (
                   <p className="mt-1 text-xs text-[#555]">
                     {locale === "en" ? "Renews on " : "Renova em "}
@@ -215,17 +263,33 @@ export default async function ContaPage({
                     <p className="truncate font-medium text-white">
                       {encomenda.carro}
                     </p>
-                    <p className="text-xs text-[#888]">
-                      {STATUS_LABEL[encomenda.status]} ·{" "}
-                      {formatDate(encomenda.created_at)}
-                    </p>
+                    <div className="mt-1 flex flex-wrap items-center gap-2">
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${STATUS_STYLE[encomenda.status]}`}
+                      >
+                        {STATUS_LABEL[encomenda.status]}
+                      </span>
+                      {!encomenda.pagamento_confirmado && (
+                        <span className="rounded-full bg-[#CC1111]/15 px-2 py-0.5 text-[11px] font-semibold text-[#CC1111]">
+                          {t("pagamentoPendente")}
+                        </span>
+                      )}
+                      <span className="text-xs text-[#888]">
+                        {formatDate(encomenda.created_at)}
+                      </span>
+                    </div>
                   </div>
-                  {encomenda.status === "entregue" && encomenda.audio_path && (
+                  {encomenda.status === "entregue" && encomenda.audio_path ? (
                     <EncomendaDownloadButton
                       audioPath={encomenda.audio_path}
                       title={`Garagem Beats - ${encomenda.carro}`}
                     />
-                  )}
+                  ) : !encomenda.pagamento_confirmado ? (
+                    <PayOrderButton
+                      encomendaId={encomenda.id}
+                      label={t("pagar")}
+                    />
+                  ) : null}
                 </div>
               ))}
             </div>

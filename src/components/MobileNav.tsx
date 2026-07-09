@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import LogoutButton from "@/components/LogoutButton";
 
 export default function MobileNav({ isLoggedIn }: { isLoggedIn: boolean }) {
   const [open, setOpen] = useState(false);
@@ -61,13 +62,19 @@ export default function MobileNav({ isLoggedIn }: { isLoggedIn: boolean }) {
               {t("encomenda")}
             </Link>
             {isLoggedIn ? (
-              <Link
-                href="/conta"
-                onClick={() => setOpen(false)}
-                className="hover:text-white"
-              >
-                {t("minhaConta")}
-              </Link>
+              <>
+                <Link
+                  href="/conta"
+                  onClick={() => setOpen(false)}
+                  className="hover:text-white"
+                >
+                  {t("minhaConta")}
+                </Link>
+                <LogoutButton
+                  label={t("sair")}
+                  className="w-fit text-left hover:text-white"
+                />
+              </>
             ) : (
               <Link
                 href="/login"

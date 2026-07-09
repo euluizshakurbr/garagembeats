@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import Logo from "@/components/Logo";
 import MobileNav from "@/components/MobileNav";
 import LocaleSwitcher from "@/components/LocaleSwitcher";
+import LogoutButton from "@/components/LogoutButton";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 
@@ -34,9 +35,15 @@ export default async function SiteHeader() {
             {t("encomenda")}
           </Link>
           {isLoggedIn ? (
-            <Link href="/conta" className="hover:text-white transition-colors">
-              {t("minhaConta")}
-            </Link>
+            <>
+              <Link href="/conta" className="hover:text-white transition-colors">
+                {t("minhaConta")}
+              </Link>
+              <LogoutButton
+                label={t("sair")}
+                className="hover:text-white transition-colors"
+              />
+            </>
           ) : (
             <Link
               href="/login"
