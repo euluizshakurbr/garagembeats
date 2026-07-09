@@ -2,9 +2,30 @@ import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import SiteHeader from "@/components/SiteHeader";
 import UploadTrackForm from "@/components/UploadTrackForm";
+import AdminTrackItem from "@/components/AdminTrackItem";
+import { createClient } from "@/lib/supabase/server";
+import type { Track } from "@/lib/types";
 
 export default async function AdminPage() {
   const t = await getTranslations("admin");
+
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("tracks")
+    .select("*")
+    .order("created_at", { ascending: false });
+  const tracks = (data ?? []) as Track[];
+
+  const items = tracks.map((track) => ({
+    id: track.id,
+    title: track.title,
+    brand: track.brand,
+    estilo: track.estilo,
+    coverUrl: track.cover_path
+      ? supabase.storage.from("tracks-covers").getPublicUrl(track.cover_path)
+          .data.publicUrl
+      : null,
+  }));
 
   return (
     <div className="flex flex-1 flex-col">
@@ -25,6 +46,23 @@ export default async function AdminPage() {
           <p className="mt-2 text-[#888]">{t("adicionarTrilha")}</p>
           <div className="mt-8">
             <UploadTrackForm />
+          </div>
+
+          <div className="mt-14">
+            <h2 className="text-lg font-semibold text-white">
+              Catálogo ({items.length})
+            </h2>
+            {items.length === 0 ? (
+              <p className="mt-4 text-sm text-[#555]">
+                Nenhuma música publicada ainda.
+              </p>
+            ) : (
+              <div className="mt-4 flex flex-col gap-3">
+                {items.map((track) => (
+                  <AdminTrackItem key={track.id} track={track} />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </main>
