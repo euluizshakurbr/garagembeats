@@ -400,7 +400,15 @@ function TrackCard({
 
         {audioPath && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-            <TrackPreviewPlayer audioPath={audioPath} />
+            <TrackPreviewPlayer
+              track={{
+                id: audioPath,
+                title,
+                brand,
+                coverUrl: coverUrl ?? null,
+                audioPath,
+              }}
+            />
           </div>
         )}
       </div>

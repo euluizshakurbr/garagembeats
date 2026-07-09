@@ -272,7 +272,15 @@ function TrackCard({
           <CoverFallbackIcon />
         )}
         <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-          <TrackPreviewPlayer audioPath={track.audio_path} />
+          <TrackPreviewPlayer
+            track={{
+              id: track.id,
+              title: track.title,
+              brand: track.brand,
+              coverUrl: track.coverUrl,
+              audioPath: track.audio_path,
+            }}
+          />
         </div>
 
         <div className="absolute top-2 left-2 flex flex-col gap-1">
@@ -369,7 +377,16 @@ function TrackRow({
           )}
         </div>
 
-        <TrackPreviewPlayer audioPath={track.audio_path} className="shrink-0" />
+        <TrackPreviewPlayer
+          track={{
+            id: track.id,
+            title: track.title,
+            brand: track.brand,
+            coverUrl: track.coverUrl,
+            audioPath: track.audio_path,
+          }}
+          className="shrink-0"
+        />
 
         <p className="min-w-0 flex-1 truncate font-semibold text-white">
           {track.title}
