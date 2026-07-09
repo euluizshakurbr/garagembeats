@@ -140,7 +140,7 @@
     "nenhumaMusica": "Nenhuma música no catálogo ainda.",
     "statTrilhas": "trilhas no catálogo",
     "statDownloads": "downloads no total",
-    "buscarPlaceholder": "Buscar trilha...",
+    "buscarPlaceholder": "Buscar música ou marca...",
     "resultados": "{n, plural, one {# música} other {# músicas}}",
     "recemAdicionadas": "Recém-adicionadas",
     "emAltaOrdenacao": "Em alta (30 dias)",

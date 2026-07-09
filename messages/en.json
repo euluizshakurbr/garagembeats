@@ -140,7 +140,7 @@
     "nenhumaMusica": "No songs in the catalog yet.",
     "statTrilhas": "tracks in the catalog",
     "statDownloads": "total downloads",
-    "buscarPlaceholder": "Search track...",
+    "buscarPlaceholder": "Search track or brand...",
     "resultados": "{n, plural, one {# track} other {# tracks}}",
     "recemAdicionadas": "Recently added",
     "emAltaOrdenacao": "Trending (30 days)",

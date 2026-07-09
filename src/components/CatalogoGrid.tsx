@@ -69,9 +69,11 @@ export default function CatalogoGrid({
     .filter((track) => {
       const matchesBrand = brand === "todas" || track.brand === brand;
       const matchesEstilo = estilo === "todos" || track.estilo === estilo;
-      const matchesSearch = track.title
-        .toLowerCase()
-        .includes(search.trim().toLowerCase());
+      const q = search.trim().toLowerCase();
+      const matchesSearch =
+        q === "" ||
+        track.title.toLowerCase().includes(q) ||
+        track.brand.toLowerCase().includes(q);
       return matchesBrand && matchesEstilo && matchesSearch;
     })
     .sort((a, b) => {
