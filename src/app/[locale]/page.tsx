@@ -158,9 +158,29 @@ export default async function Home() {
                     {t("jaTenhoConta")}
                   </Link>
                 </div>
-                <p className="mt-4 text-sm font-semibold text-[#CC1111]">
-                  {t("gratisHook")}
-                </p>
+                <div className="mt-5 flex justify-center">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-[#CC1111]/30 bg-[#CC1111]/10 px-4 py-1.5 text-sm text-white">
+                    <svg
+                      width="15"
+                      height="15"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#CC1111"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="shrink-0"
+                      aria-hidden="true"
+                    >
+                      <rect x="3" y="8" width="18" height="4" rx="1" />
+                      <path d="M12 8v13" />
+                      <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" />
+                      <path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8" />
+                      <path d="M16.5 8a2.5 2.5 0 0 0 0-5C13 3 12 8 12 8" />
+                    </svg>
+                    {t("gratisHook")}
+                  </span>
+                </div>
               </>
             )}
 
@@ -353,6 +373,7 @@ function TrackCard({
           <img
             src={coverUrl}
             alt={title}
+            loading="lazy"
             className="absolute inset-0 h-full w-full object-cover"
           />
         ) : (

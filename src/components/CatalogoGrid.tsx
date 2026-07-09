@@ -268,6 +268,7 @@ function TrackCard({
           <img
             src={track.coverUrl}
             alt={track.title}
+            loading="lazy"
             className="absolute inset-0 h-full w-full object-cover"
           />
         ) : (
@@ -372,6 +373,7 @@ function TrackRow({
             <img
               src={track.coverUrl}
               alt={track.title}
+              loading="lazy"
               className="absolute inset-0 h-full w-full object-cover"
             />
           ) : (
