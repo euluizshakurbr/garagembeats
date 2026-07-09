@@ -2,7 +2,11 @@
 
 import { useRef, useState, type FormEvent } from "react";
 import { useTranslations } from "next-intl";
-import { marcarEmProducao, entregarEncomenda } from "@/app/[locale]/admin/pedidos/actions";
+import {
+  marcarEmProducao,
+  entregarEncomenda,
+} from "@/app/[locale]/admin/pedidos/actions";
+import { createClient } from "@/lib/supabase/client";
 import { CheckIcon } from "@/components/icons";
 
 export default function DeliverOrderForm({
@@ -32,8 +36,29 @@ export default function DeliverOrderForm({
     setErrorMessage("");
 
     const formData = new FormData(event.currentTarget);
-    const result = await entregarEncomenda(formData);
+    const audioFile = formData.get("audio") as File | null;
+    if (!audioFile || audioFile.size === 0) {
+      setErrorMessage("Selecione o arquivo de áudio.");
+      setBusy(false);
+      return;
+    }
 
+    // Envia o áudio direto pro Storage (na pasta do cliente, pra RLS liberar
+    // o download pra ele). Admin tem permissão de insert no bucket.
+    const supabase = createClient();
+    const ext = audioFile.name.split(".").pop() || "mp3";
+    const audioPath = `${userId}/${crypto.randomUUID()}.${ext}`;
+    const { error: uploadError } = await supabase.storage
+      .from("encomendas-audio")
+      .upload(audioPath, audioFile);
+
+    if (uploadError) {
+      setErrorMessage(`Falha ao enviar o arquivo: ${uploadError.message}`);
+      setBusy(false);
+      return;
+    }
+
+    const result = await entregarEncomenda(encomendaId, audioPath);
     if (result.error) {
       setErrorMessage(result.error);
       setBusy(false);
@@ -69,8 +94,6 @@ export default function DeliverOrderForm({
         onSubmit={handleSubmit}
         className="flex flex-wrap items-center gap-2"
       >
-        <input type="hidden" name="encomendaId" value={encomendaId} />
-        <input type="hidden" name="userId" value={userId} />
         <input
           type="file"
           name="audio"
@@ -93,4 +116,3 @@ export default function DeliverOrderForm({
     </div>
   );
 }
-

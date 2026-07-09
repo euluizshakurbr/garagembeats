@@ -3,6 +3,18 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
+async function isAdmin(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  userId: string
+) {
+  const { data } = await supabase
+    .from("profiles")
+    .select("is_admin")
+    .eq("id", userId)
+    .single();
+  return !!data?.is_admin;
+}
+
 export async function marcarEmProducao(encomendaId: string) {
   const supabase = await createClient();
   const { error } = await supabase
@@ -18,27 +30,18 @@ export async function marcarEmProducao(encomendaId: string) {
   return { ok: true };
 }
 
-export async function entregarEncomenda(formData: FormData) {
+// O arquivo de áudio é enviado direto do navegador pro Supabase Storage
+// (ver DeliverOrderForm), evitando o limite de corpo do server action (4,5MB
+// na Vercel). Aqui só marcamos a encomenda como entregue com o caminho.
+export async function entregarEncomenda(encomendaId: string, audioPath: string) {
   const supabase = await createClient();
-
-  const encomendaId = formData.get("encomendaId") as string;
-  const userId = formData.get("userId") as string;
-  const audioFile = formData.get("audio") as File;
-
-  if (!encomendaId || !userId || !audioFile || audioFile.size === 0) {
-    return { error: "Selecione o arquivo de áudio." };
+  const { data: userData } = await supabase.auth.getUser();
+  if (!userData.user || !(await isAdmin(supabase, userData.user.id))) {
+    return { error: "Sem permissão." };
   }
 
-  const ext = audioFile.name.split(".").pop();
-  const audioPath = `${userId}/${crypto.randomUUID()}.${ext}`;
-
-  const { error: uploadError } = await supabase.storage
-    .from("encomendas-audio")
-    .upload(audioPath, audioFile);
-
-  if (uploadError) {
-    console.error("Erro ao enviar entrega da encomenda:", uploadError);
-    return { error: `Falha ao enviar o arquivo: ${uploadError.message}` };
+  if (!encomendaId || !audioPath) {
+    return { error: "Selecione o arquivo de áudio." };
   }
 
   const { error: updateError } = await supabase
@@ -48,7 +51,7 @@ export async function entregarEncomenda(formData: FormData) {
 
   if (updateError) {
     console.error("Erro ao marcar encomenda como entregue:", updateError);
-    return { error: `Falha ao salvar a entrega: ${updateError.message}` };
+    return { error: "Falha ao salvar a entrega. Tente novamente." };
   }
 
   revalidatePath("/admin/pedidos");
