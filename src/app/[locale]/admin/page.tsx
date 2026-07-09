@@ -1,6 +1,6 @@
-import { Link } from "@/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import SiteHeader from "@/components/SiteHeader";
+import AdminNav from "@/components/AdminNav";
 import UploadTrackForm from "@/components/UploadTrackForm";
 import AdminTrackItem from "@/components/AdminTrackItem";
 import { createClient } from "@/lib/supabase/server";
@@ -32,17 +32,10 @@ export default async function AdminPage() {
       <SiteHeader />
       <main className="flex-1 px-6 py-16">
         <div className="mx-auto max-w-2xl">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <h1 className="text-3xl font-bold text-white sm:text-4xl">
-              {t("novaMusicaTitulo")}
-            </h1>
-            <Link
-              href="/admin/pedidos"
-              className="rounded-xl border border-[#333] px-4 py-2 text-sm font-semibold text-white transition-colors hover:border-[#555]"
-            >
-              {t("verPedidos")}
-            </Link>
-          </div>
+          <AdminNav />
+          <h1 className="text-3xl font-bold text-white sm:text-4xl">
+            {t("novaMusicaTitulo")}
+          </h1>
           <p className="mt-2 text-[#888]">{t("adicionarTrilha")}</p>
           <div className="mt-8">
             <UploadTrackForm />

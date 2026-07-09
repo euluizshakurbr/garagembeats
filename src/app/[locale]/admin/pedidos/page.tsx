@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import SiteHeader from "@/components/SiteHeader";
+import AdminNav from "@/components/AdminNav";
 import OrdersAdmin from "@/components/OrdersAdmin";
 import { createClient } from "@/lib/supabase/server";
 import type { Encomenda } from "@/lib/types";
@@ -20,6 +21,7 @@ export default async function PedidosAdminPage() {
       <SiteHeader />
       <main className="flex-1 px-6 py-16">
         <div className="mx-auto max-w-4xl">
+          <AdminNav />
           <h1 className="text-3xl font-bold text-white sm:text-4xl">
             {t("titulo")}
           </h1>

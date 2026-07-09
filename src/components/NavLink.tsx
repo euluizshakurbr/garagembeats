@@ -10,19 +10,21 @@ export default function NavLink({
   children,
   className = "",
   activeClassName = "",
+  exact = false,
   onClick,
 }: {
   href: Href;
   children: ReactNode;
   className?: string;
   activeClassName?: string;
+  exact?: boolean;
   onClick?: () => void;
 }) {
   const pathname = usePathname();
   const target = typeof href === "string" ? href : href.pathname ?? "/";
   const active =
-    target === "/"
-      ? pathname === "/"
+    exact || target === "/"
+      ? pathname === target
       : pathname === target || pathname.startsWith(`${target}/`);
 
   return (
