@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { alternates } from "@/i18n/seo";
+import { Link } from "@/i18n/navigation";
 import SiteHeader from "@/components/SiteHeader";
 import SubscribeButton from "@/components/SubscribeButton";
 import SupabaseSetupNotice from "@/components/SupabaseSetupNotice";
@@ -72,6 +73,20 @@ export default async function PlanosPage() {
             {t("titulo")}
           </h1>
           <p className="mt-2 text-[#888]">{t("subtitulo")}</p>
+
+          {configured && !isLoggedIn && (
+            <div className="mx-auto mt-6 flex max-w-xl flex-col items-center justify-center gap-3 rounded-2xl border border-[#CC1111]/40 bg-gradient-to-b from-[#1a0808] to-[#111] px-5 py-4 sm:flex-row sm:justify-between">
+              <p className="text-sm font-medium text-white">
+                {t("gratisBanner")}
+              </p>
+              <Link
+                href="/cadastro"
+                className="shrink-0 rounded-xl bg-[#CC1111] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#aa0e0e]"
+              >
+                {t("gratisBannerCta")}
+              </Link>
+            </div>
+          )}
 
           {!configured && (
             <div className="mx-auto mt-8 max-w-md text-left">

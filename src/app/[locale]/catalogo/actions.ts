@@ -43,20 +43,30 @@ export async function baixarTrack(
     const periodValido =
       !subscription?.current_period_end ||
       new Date(subscription.current_period_end).getTime() > Date.now();
-    if (!subscription || !periodValido) {
-      return { error: t("assineParaBaixar"), needsPlan: true };
-    }
 
-    const plan = getPlan(subscription.plan);
-    if (plan && plan.downloadLimit !== null) {
+    if (subscription && periodValido) {
+      // Plano ativo: aplica o limite mensal do plano.
+      const plan = getPlan(subscription.plan);
+      if (plan && plan.downloadLimit !== null) {
+        const { count } = await supabase
+          .from("downloads")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", userData.user.id)
+          .gte("created_at", subscription.current_period_start);
+
+        if ((count ?? 0) >= plan.downloadLimit) {
+          return { error: t("limiteDownloads", { limite: plan.downloadLimit }) };
+        }
+      }
+    } else {
+      // Sem plano ativo: cada conta tem direito a 1 download grátis vitalício.
       const { count } = await supabase
         .from("downloads")
         .select("id", { count: "exact", head: true })
-        .eq("user_id", userData.user.id)
-        .gte("created_at", subscription.current_period_start);
+        .eq("user_id", userData.user.id);
 
-      if ((count ?? 0) >= plan.downloadLimit) {
-        return { error: t("limiteDownloads", { limite: plan.downloadLimit }) };
+      if ((count ?? 0) >= 1) {
+        return { error: t("limiteGratis"), needsPlan: true };
       }
     }
   }

@@ -12,6 +12,7 @@
     "loginParaBaixar": "Você precisa entrar na sua conta para baixar.",
     "assineParaBaixar": "Assine um plano para baixar músicas.",
     "limiteDownloads": "Você já usou seus {limite} downloads deste mês.",
+    "limiteGratis": "Você já usou seu download grátis. Assine um plano para baixar mais.",
     "erroGerarLink": "Não foi possível gerar o link de download."
   },
   "nav": {
@@ -65,6 +66,8 @@
   },
   "planos": {
     "assinaturaMensal": "Assinatura mensal",
+    "gratisBanner": "Novo por aqui? Crie sua conta e baixe 1 música grátis.",
+    "gratisBannerCta": "Criar conta grátis",
     "titulo": "Baixe quantas trilhas o seu plano permitir",
     "subtitulo": "Assine uma vez, pague todo mês, cancele quando quiser.",
     "popular": "Popular",

@@ -12,6 +12,7 @@
     "loginParaBaixar": "You need to log in to download.",
     "assineParaBaixar": "Subscribe to a plan to download songs.",
     "limiteDownloads": "You've already used your {limite} downloads this month.",
+    "limiteGratis": "You've used your free download. Subscribe to a plan to download more.",
     "erroGerarLink": "Couldn't generate the download link."
   },
   "nav": {
@@ -65,6 +66,8 @@
   },
   "planos": {
     "assinaturaMensal": "Monthly subscription",
+    "gratisBanner": "New here? Create your account and download 1 track for free.",
+    "gratisBannerCta": "Create free account",
     "titulo": "Download as many tracks as your plan allows",
     "subtitulo": "Subscribe once, pay monthly, cancel anytime.",
     "popular": "Popular",
