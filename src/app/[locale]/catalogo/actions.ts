@@ -2,6 +2,7 @@
 
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getPlan } from "@/lib/plans";
 import type { Subscription } from "@/lib/types";
 
@@ -71,7 +72,11 @@ export async function baixarTrack(
     }
   }
 
-  const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+  // A autorização já foi feita acima (plano/limite/grátis). O link é gerado
+  // com o client admin porque a RLS do bucket exige assinatura ativa — o que
+  // bloquearia o download grátis. A checagem de permissão é a lógica acima.
+  const admin = createAdminClient();
+  const { data: signedUrlData, error: signedUrlError } = await admin.storage
     .from("tracks-audio")
     .createSignedUrl(audioPath, 60, { download: nomeArquivo(title, audioPath) });
 

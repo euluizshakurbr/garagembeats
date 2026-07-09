@@ -125,8 +125,34 @@ export async function pagarEncomenda(encomendaId: string) {
 
 export async function gerarLinkDownload(audioPath: string, title: string) {
   const supabase = await createClient();
+  const { data: userData } = await supabase.auth.getUser();
+  if (!userData.user) {
+    return { error: "Não foi possível gerar o link de download." };
+  }
+
+  // Confirma que esse áudio está no histórico de downloads do usuário
+  // (evita gerar link de faixa que a pessoa nunca baixou).
+  const { data: track } = await supabase
+    .from("tracks")
+    .select("id")
+    .eq("audio_path", audioPath)
+    .maybeSingle();
+  if (track) {
+    const { count } = await supabase
+      .from("downloads")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", userData.user.id)
+      .eq("track_id", track.id);
+    if (!count) {
+      return { error: "Não foi possível gerar o link de download." };
+    }
+  }
+
+  // Client admin porque a RLS do bucket exige assinatura ativa (a autorização
+  // é a checagem de histórico acima).
   const ext = audioPath.split(".").pop();
-  const { data, error } = await supabase.storage
+  const admin = createAdminClient();
+  const { data, error } = await admin.storage
     .from("tracks-audio")
     .createSignedUrl(audioPath, 60, { download: `${title}.${ext}` });
 
