@@ -1,4 +1,6 @@
+import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
+import { alternates } from "@/i18n/seo";
 import SiteHeader from "@/components/SiteHeader";
 import SubscribeButton from "@/components/SubscribeButton";
 import SupabaseSetupNotice from "@/components/SupabaseSetupNotice";
@@ -18,6 +20,16 @@ function custoPorMusica(cents: number, downloadLimit: number | null, moeda: stri
       ? `US$${valor.toFixed(2)}`
       : `R$${valor.toFixed(2).replace(".", ",")}`;
   return formatado;
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const t = await getTranslations();
+  return {
+    title: t("nav.planos"),
+    description: t("planos.subtitulo"),
+    alternates: alternates("/planos", locale),
+  };
 }
 
 export default async function PlanosPage() {

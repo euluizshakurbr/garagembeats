@@ -16,14 +16,39 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Garagem Beats | Música pra quem ama carro",
-  description:
-    "Compre trilhas exclusivas do catálogo ou peça uma música 100% personalizada inspirada no seu carro.",
-};
-
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const isEn = locale === "en";
+  const title = isEn
+    ? "Garagem Beats | Music for car lovers"
+    : "Garagem Beats | Música pra quem ama carro";
+  const description = isEn
+    ? "Exclusive car-inspired tracks, copyright-free for your videos — or order a 100% custom song for your build."
+    : "Compre trilhas exclusivas do catálogo ou peça uma música 100% personalizada inspirada no seu carro.";
+
+  return {
+    metadataBase: new URL(
+      process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
+    ),
+    title: { default: title, template: "%s | Garagem Beats" },
+    description,
+    openGraph: {
+      type: "website",
+      siteName: "Garagem Beats",
+      title,
+      description,
+      locale: isEn ? "en_US" : "pt_BR",
+    },
+    twitter: { card: "summary_large_image", title, description },
+  };
 }
 
 export default async function LocaleLayout({

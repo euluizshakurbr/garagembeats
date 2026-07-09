@@ -1,5 +1,7 @@
+import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
+import { alternates } from "@/i18n/seo";
 import SiteHeader from "@/components/SiteHeader";
 import CatalogoGrid from "@/components/CatalogoGrid";
 import SupabaseSetupNotice from "@/components/SupabaseSetupNotice";
@@ -8,6 +10,16 @@ import { isSupabaseConfigured } from "@/lib/supabase/config";
 import type { Track } from "@/lib/types";
 
 const TRINTA_DIAS_MS = 30 * 24 * 60 * 60 * 1000;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const t = await getTranslations();
+  return {
+    title: t("nav.catalogo"),
+    description: t("catalogo.subtitulo"),
+    alternates: alternates("/catalogo", locale),
+  };
+}
 
 export default async function CatalogoPage() {
   const t = await getTranslations("catalogo");

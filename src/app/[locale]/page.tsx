@@ -1,5 +1,7 @@
+import type { Metadata } from "next";
 import { Link } from "@/i18n/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
+import { alternates } from "@/i18n/seo";
 import SiteHeader from "@/components/SiteHeader";
 import TrackPreviewPlayer from "@/components/TrackPreviewPlayer";
 import { createClient } from "@/lib/supabase/server";
@@ -39,6 +41,15 @@ const DEMO_TRACKS = [
   { title: "Autobahn", brand: "Mercedes", gradient: GRADIENTS[4] },
   { title: "Off-Road Beat", brand: "Agrale", gradient: GRADIENTS[5] },
 ];
+
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const t = await getTranslations();
+  return {
+    description: t("home.heroSubtitulo"),
+    alternates: alternates("/", locale),
+  };
+}
 
 export default async function Home() {
   const t = await getTranslations("home");
