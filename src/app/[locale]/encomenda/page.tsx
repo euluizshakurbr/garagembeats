@@ -16,9 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function EncomendaPage() {
-  const t = await getTranslations("encomenda");
-
+export default function EncomendaPage() {
   return (
     <div className="flex flex-1 flex-col">
       <SiteHeader />
@@ -26,10 +24,6 @@ export default async function EncomendaPage() {
       <main className="flex flex-1 items-center justify-center">
         <SiteWizard />
       </main>
-
-      <footer className="border-t border-[#1a1a1a] px-6 py-8">
-        <p className="text-center text-sm text-[#555]">{t("footerTagline")}</p>
-      </footer>
     </div>
   );
 }

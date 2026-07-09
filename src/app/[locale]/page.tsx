@@ -315,39 +315,6 @@ export default async function Home() {
           </section>
         )}
       </main>
-
-      <footer className="border-t border-[#1a1a1a] px-6 py-8">
-        <div className="mx-auto flex max-w-5xl flex-col-reverse items-center gap-4 text-center sm:flex-row sm:justify-between sm:text-left">
-          <p className="text-sm text-[#555]">
-            {t("footerTagline")}
-            <br />
-            {t("footerCopyright", { ano: new Date().getFullYear() })}
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-[#888]">
-            <a
-              href="https://wa.me/5500000000000"
-              className="hover:text-white transition-colors"
-            >
-              WhatsApp
-            </a>
-            <a
-              href="https://instagram.com/garagembeats"
-              className="hover:text-white transition-colors"
-            >
-              Instagram
-            </a>
-            <Link href="/termos" className="hover:text-white transition-colors">
-              {t("termosUso")}
-            </Link>
-            <Link
-              href="/privacidade"
-              className="hover:text-white transition-colors"
-            >
-              {t("privacidade")}
-            </Link>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
