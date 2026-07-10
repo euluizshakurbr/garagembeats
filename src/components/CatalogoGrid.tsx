@@ -89,8 +89,38 @@ export default function CatalogoGrid({
       );
     });
 
+  const temFiltro =
+    search.trim() !== "" || brand !== "todas" || estilo !== "todos";
+
+  function limparFiltros() {
+    setSearch("");
+    setBrand("todas");
+    setEstilo("todos");
+  }
+
   return (
     <div>
+      {!isLoggedIn && (
+        <div className="mt-6 flex flex-col items-center justify-between gap-3 rounded-2xl border border-[#CC1111]/30 bg-gradient-to-b from-[#1a0808] to-[#111] px-5 py-4 sm:flex-row">
+          <p className="flex items-center gap-2 text-sm font-medium text-white">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#CC1111" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+              <rect x="3" y="8" width="18" height="4" rx="1" />
+              <path d="M12 8v13" />
+              <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7" />
+              <path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8" />
+              <path d="M16.5 8a2.5 2.5 0 0 0 0-5C13 3 12 8 12 8" />
+            </svg>
+            {t("gratisNudge")}
+          </p>
+          <Link
+            href="/cadastro"
+            className="shrink-0 rounded-xl bg-[#CC1111] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[#aa0e0e]"
+          >
+            {t("gratisNudgeCta")}
+          </Link>
+        </div>
+      )}
+
       <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative w-full sm:w-64">
           <svg
@@ -175,13 +205,38 @@ export default function CatalogoGrid({
       )}
 
       {filtered.length > 0 && (
-        <p className="mt-6 text-sm text-[#555]">
-          {t("resultados", { n: filtered.length })}
-        </p>
+        <div className="mt-6 flex items-center gap-3">
+          <p className="text-sm text-[#555]">
+            {t("resultados", { n: filtered.length })}
+          </p>
+          {temFiltro && (
+            <button
+              type="button"
+              onClick={limparFiltros}
+              className="inline-flex items-center gap-1 text-sm font-medium text-[#888] transition-colors hover:text-white"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M6 6l12 12M18 6L6 18" />
+              </svg>
+              {t("limparFiltros")}
+            </button>
+          )}
+        </div>
       )}
 
       {filtered.length === 0 ? (
-        <p className="mt-10 text-center text-[#555]">{t("nenhumaTrilha")}</p>
+        <div className="mt-10 text-center">
+          <p className="text-[#555]">{t("nenhumaTrilha")}</p>
+          {temFiltro && (
+            <button
+              type="button"
+              onClick={limparFiltros}
+              className="mt-3 rounded-xl border border-[#333] px-4 py-2 text-sm font-semibold text-white transition-colors hover:border-[#555]"
+            >
+              {t("limparFiltros")}
+            </button>
+          )}
+        </div>
       ) : visualizacao === "grade" ? (
         <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {filtered.map((track) => (
