@@ -25,47 +25,40 @@ export default async function SiteHeader() {
           <Logo />
         </Link>
 
-        <nav className="hidden items-center gap-5 text-sm text-[#888] sm:flex">
-          <NavLink
-            href="/catalogo"
-            className="transition-colors hover:text-white"
-            activeClassName="!text-white font-semibold"
-          >
+        <nav className="hidden items-center gap-1 text-sm font-medium sm:flex">
+          <NavLink href="/catalogo" className={navPill} activeClassName={navPillActive}>
             {t("catalogo")}
           </NavLink>
-          <NavLink
-            href="/planos"
-            className="transition-colors hover:text-white"
-            activeClassName="!text-white font-semibold"
-          >
+          <NavLink href="/planos" className={navPill} activeClassName={navPillActive}>
             {t("planos")}
           </NavLink>
-          <NavLink
-            href="/encomenda"
-            className="transition-colors hover:text-white"
-            activeClassName="!text-white font-semibold"
-          >
+          <NavLink href="/encomenda" className={navPill} activeClassName={navPillActive}>
             {t("encomenda")}
           </NavLink>
+
+          <span className="mx-2 h-5 w-px bg-[#1a1a1a]" aria-hidden="true" />
+
           {isLoggedIn ? (
             <>
-              <Link href="/conta" className="hover:text-white transition-colors">
+              <NavLink href="/conta" className={navPill} activeClassName={navPillActive}>
                 {t("minhaConta")}
-              </Link>
+              </NavLink>
               <LogoutButton
                 label={t("sair")}
-                className="hover:text-white transition-colors"
+                className="rounded-lg px-3 py-2 text-[#666] transition-colors hover:text-white"
               />
             </>
           ) : (
             <Link
               href="/login"
-              className="rounded-xl bg-[#CC1111] px-4 py-2 font-semibold text-white transition-colors hover:bg-[#aa0e0e]"
+              className="rounded-xl bg-[#CC1111] px-4 py-2 font-semibold text-white shadow-lg shadow-[#CC1111]/20 transition-colors hover:bg-[#aa0e0e]"
             >
               {t("entrar")}
             </Link>
           )}
-          <LocaleSwitcher />
+          <div className="ml-2">
+            <LocaleSwitcher />
+          </div>
         </nav>
 
         <div className="flex items-center gap-2 sm:hidden">
@@ -76,4 +69,8 @@ export default async function SiteHeader() {
     </header>
   );
 }
+
+const navPill =
+  "rounded-lg px-3 py-2 text-[#888] transition-colors hover:bg-[#161616] hover:text-white";
+const navPillActive = "!bg-[#1a1a1a] !text-white";
 

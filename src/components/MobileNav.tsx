@@ -39,51 +39,55 @@ export default function MobileNav({ isLoggedIn }: { isLoggedIn: boolean }) {
       </button>
 
       {open && (
-        <nav className="absolute inset-x-0 top-full border-b border-[#1a1a1a] bg-[#0A0A0A] px-6 py-4">
-          <div className="flex flex-col gap-4 text-sm text-[#888]">
+        <nav className="absolute inset-x-0 top-full z-40 border-b border-[#1a1a1a] bg-[#0A0A0A] px-4 py-3 shadow-2xl">
+          <div className="flex flex-col gap-1 text-sm font-medium">
             <NavLink
               href="/catalogo"
               onClick={() => setOpen(false)}
-              className="hover:text-white"
-              activeClassName="!text-white font-semibold"
+              className={mobilePill}
+              activeClassName={mobilePillActive}
             >
               {t("catalogo")}
             </NavLink>
             <NavLink
               href="/planos"
               onClick={() => setOpen(false)}
-              className="hover:text-white"
-              activeClassName="!text-white font-semibold"
+              className={mobilePill}
+              activeClassName={mobilePillActive}
             >
               {t("planos")}
             </NavLink>
             <NavLink
               href="/encomenda"
               onClick={() => setOpen(false)}
-              className="hover:text-white"
-              activeClassName="!text-white font-semibold"
+              className={mobilePill}
+              activeClassName={mobilePillActive}
             >
               {t("encomenda")}
             </NavLink>
+
+            <span className="my-1 h-px bg-[#1a1a1a]" aria-hidden="true" />
+
             {isLoggedIn ? (
               <>
-                <Link
+                <NavLink
                   href="/conta"
                   onClick={() => setOpen(false)}
-                  className="hover:text-white"
+                  className={mobilePill}
+                  activeClassName={mobilePillActive}
                 >
                   {t("minhaConta")}
-                </Link>
+                </NavLink>
                 <LogoutButton
                   label={t("sair")}
-                  className="w-fit text-left hover:text-white"
+                  className="rounded-lg px-3 py-2.5 text-left text-[#666] transition-colors hover:text-white"
                 />
               </>
             ) : (
               <Link
                 href="/login"
                 onClick={() => setOpen(false)}
-                className="inline-flex w-fit rounded-xl bg-[#CC1111] px-4 py-2 font-semibold text-white"
+                className="mt-1 inline-flex items-center justify-center rounded-xl bg-[#CC1111] px-4 py-2.5 font-semibold text-white transition-colors hover:bg-[#aa0e0e]"
               >
                 {t("entrar")}
               </Link>
@@ -94,4 +98,8 @@ export default function MobileNav({ isLoggedIn }: { isLoggedIn: boolean }) {
     </div>
   );
 }
+
+const mobilePill =
+  "rounded-lg px-3 py-2.5 text-[#888] transition-colors hover:bg-[#161616] hover:text-white";
+const mobilePillActive = "!bg-[#1a1a1a] !text-white";
 
