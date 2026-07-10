@@ -1,10 +1,12 @@
 "use client";
 
 import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
+import Cropper from "react-easy-crop";
 import { subirMusica } from "@/app/[locale]/admin/actions";
 import { createClient } from "@/lib/supabase/client";
 import { ESTILOS } from "@/lib/estilos";
 import { compressImage } from "@/lib/compressImage";
+import { getCroppedImage, type Area } from "@/lib/cropImage";
 
 export default function UploadTrackForm() {
   const formRef = useRef<HTMLFormElement>(null);
@@ -14,13 +16,18 @@ export default function UploadTrackForm() {
   const [errorMessage, setErrorMessage] = useState("");
   const [duration, setDuration] = useState<number | null>(null);
 
+  // Capa + recorte
+  const [coverSrc, setCoverSrc] = useState<string | null>(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedArea, setCroppedArea] = useState<Area | null>(null);
+
   function handleAudioChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) {
       setDuration(null);
       return;
     }
-
     const audio = new Audio();
     audio.preload = "metadata";
     audio.onloadedmetadata = () => {
@@ -28,6 +35,25 @@ export default function UploadTrackForm() {
       URL.revokeObjectURL(audio.src);
     };
     audio.src = URL.createObjectURL(file);
+  }
+
+  function handleCoverChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (coverSrc) URL.revokeObjectURL(coverSrc);
+    if (!file) {
+      setCoverSrc(null);
+      return;
+    }
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    setCroppedArea(null);
+    setCoverSrc(URL.createObjectURL(file));
+  }
+
+  function limparCapa() {
+    if (coverSrc) URL.revokeObjectURL(coverSrc);
+    setCoverSrc(null);
+    setCroppedArea(null);
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -40,7 +66,6 @@ export default function UploadTrackForm() {
     const brand = String(formData.get("brand") || "");
     const estilo = String(formData.get("estilo") || "");
     const audioFile = formData.get("audio") as File | null;
-    const coverFile = formData.get("cover") as File | null;
 
     if (!title || !brand || !audioFile || audioFile.size === 0) {
       setStatus("error");
@@ -50,8 +75,7 @@ export default function UploadTrackForm() {
 
     const supabase = createClient();
 
-    // Envia o áudio DIRETO pro Supabase Storage (sem passar pelo servidor Next,
-    // que tem limite de 20MB). O usuário é admin, então a RLS do bucket permite.
+    // Áudio direto pro Storage (sem passar pelo servidor Next).
     const audioExt = audioFile.name.split(".").pop() || "mp3";
     const audioPath = `${crypto.randomUUID()}.${audioExt}`;
     const { error: audioError } = await supabase.storage
@@ -63,22 +87,28 @@ export default function UploadTrackForm() {
       return;
     }
 
-    // Capa (opcional) — comprime e envia direto também.
+    // Capa (opcional): usa o recorte quadrado que o admin posicionou.
     let coverPath: string | null = null;
-    if (coverFile && coverFile.size > 0) {
-      const compressed = await compressImage(coverFile);
-      coverPath = `${crypto.randomUUID()}.jpg`;
-      const { error: coverError } = await supabase.storage
-        .from("tracks-covers")
-        .upload(coverPath, compressed);
-      if (coverError) {
+    if (coverSrc && croppedArea) {
+      try {
+        const recortada = await getCroppedImage(coverSrc, croppedArea);
+        const comprimida = await compressImage(recortada);
+        coverPath = `${crypto.randomUUID()}.jpg`;
+        const { error: coverError } = await supabase.storage
+          .from("tracks-covers")
+          .upload(coverPath, comprimida);
+        if (coverError) {
+          setStatus("error");
+          setErrorMessage(`Falha ao enviar a capa: ${coverError.message}`);
+          return;
+        }
+      } catch {
         setStatus("error");
-        setErrorMessage(`Falha ao enviar a capa: ${coverError.message}`);
+        setErrorMessage("Falha ao processar a capa.");
         return;
       }
     }
 
-    // Grava só os metadados no catálogo (payload pequeno).
     const result = await subirMusica({
       title,
       brand,
@@ -97,6 +127,7 @@ export default function UploadTrackForm() {
     setStatus("done");
     formRef.current?.reset();
     setDuration(null);
+    limparCapa();
   }
 
   return (
@@ -112,28 +143,14 @@ export default function UploadTrackForm() {
           <label htmlFor="title" className="text-sm font-medium text-white">
             Título
           </label>
-          <input
-            id="title"
-            name="title"
-            type="text"
-            required
-            placeholder="Ex: Turbo Rush"
-            className={inputClass}
-          />
+          <input id="title" name="title" type="text" required placeholder="Ex: Turbo Rush" className={inputClass} />
         </div>
 
         <div className="flex flex-col gap-1.5">
           <label htmlFor="brand" className="text-sm font-medium text-white">
             Marca/tag
           </label>
-          <input
-            id="brand"
-            name="brand"
-            type="text"
-            required
-            placeholder="Ex: Volkswagen"
-            className={inputClass}
-          />
+          <input id="brand" name="brand" type="text" required placeholder="Ex: Volkswagen" className={inputClass} />
         </div>
 
         <div className="flex flex-col gap-1.5">
@@ -154,15 +171,7 @@ export default function UploadTrackForm() {
           <label htmlFor="audio" className="text-sm font-medium text-white">
             Arquivo de áudio (MP3)
           </label>
-          <input
-            id="audio"
-            name="audio"
-            type="file"
-            accept="audio/*"
-            required
-            onChange={handleAudioChange}
-            className={inputClass}
-          />
+          <input id="audio" name="audio" type="file" accept="audio/*" required onChange={handleAudioChange} className={inputClass} />
           {duration !== null && (
             <p className="text-xs text-[#888]">
               Duração detectada: {Math.floor(duration / 60)}:
@@ -176,16 +185,52 @@ export default function UploadTrackForm() {
             Capa (opcional)
           </label>
           <p className="text-xs text-[#888]">
-            Pode subir em qualquer tamanho — a imagem é redimensionada e
-            comprimida automaticamente antes do upload.
+            Escolha a imagem e posicione o carro dentro do quadrado (arraste e
+            use o zoom). É assim que a capa vai aparecer no card.
           </p>
           <input
             id="cover"
-            name="cover"
             type="file"
             accept="image/*"
+            onChange={handleCoverChange}
             className={inputClass}
           />
+
+          {coverSrc && (
+            <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <div className="relative aspect-square w-full max-w-[220px] overflow-hidden rounded-xl border border-[#1a1a1a] bg-[#0A0A0A]">
+                <Cropper
+                  image={coverSrc}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={1}
+                  showGrid={false}
+                  onCropChange={setCrop}
+                  onZoomChange={setZoom}
+                  onCropComplete={(_, area) => setCroppedArea(area)}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs text-[#888]">Zoom</label>
+                <input
+                  type="range"
+                  min={1}
+                  max={3}
+                  step={0.05}
+                  value={zoom}
+                  onChange={(e) => setZoom(Number(e.target.value))}
+                  className="w-full max-w-[220px] accent-[#CC1111]"
+                />
+                <button
+                  type="button"
+                  onClick={limparCapa}
+                  className="w-fit text-xs text-[#888] underline-offset-2 hover:text-white hover:underline"
+                >
+                  Remover capa
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -193,9 +238,7 @@ export default function UploadTrackForm() {
         <p className="mt-4 text-sm text-[#CC1111]">{errorMessage}</p>
       )}
       {status === "done" && (
-        <p className="mt-4 text-sm text-[#888]">
-          Música adicionada ao catálogo.
-        </p>
+        <p className="mt-4 text-sm text-[#888]">Música adicionada ao catálogo.</p>
       )}
 
       <button
@@ -211,4 +254,3 @@ export default function UploadTrackForm() {
 
 const inputClass =
   "w-full rounded-xl border border-[#1a1a1a] bg-[#0A0A0A] px-4 py-2.5 text-white placeholder-[#555] outline-none transition-colors focus:border-[#CC1111]";
-
