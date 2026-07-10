@@ -116,7 +116,7 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Aplica a todas as rotas exceto api, estáticos, SEO e arquivos de mídia.
-    "/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|mp3|wav)$).*)",
+    // Aplica a todas as rotas exceto api, auth (callback), estáticos, SEO e mídia.
+    "/((?!api|auth|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:svg|png|jpg|jpeg|mp3|wav)$).*)",
   ],
 };
