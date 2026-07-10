@@ -6,7 +6,10 @@ import { getMessages, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import AudioPlayerProvider from "@/components/audio/AudioPlayerProvider";
 import SiteFooter from "@/components/SiteFooter";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 import "../globals.css";
+
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -80,6 +83,7 @@ export default async function LocaleLayout({
             <SiteFooter />
           </AudioPlayerProvider>
         </NextIntlClientProvider>
+        {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
       </body>
     </html>
   );
