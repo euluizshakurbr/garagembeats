@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { assinarPlano } from "@/app/[locale]/planos/actions";
+import { getPlan, getPlanPreco } from "@/lib/plans";
+import { trackMeta } from "@/lib/meta";
 
 export default function SubscribeButton({
   planId,
@@ -18,6 +20,7 @@ export default function SubscribeButton({
   highlighted?: boolean;
 }) {
   const t = useTranslations("planos");
+  const locale = useLocale();
   const router = useRouter();
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
 
@@ -33,6 +36,18 @@ export default function SubscribeButton({
       setStatus("error");
       return;
     }
+
+    const plan = getPlan(planId);
+    if (plan) {
+      const preco = getPlanPreco(plan, locale);
+      trackMeta("InitiateCheckout", {
+        value: preco.cents / 100,
+        currency: preco.currency.toUpperCase(),
+        content_type: "product",
+        content_name: `Plano ${plan.name}`,
+      });
+    }
+
     window.location.href = result.checkoutUrl;
   }
 

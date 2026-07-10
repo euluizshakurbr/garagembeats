@@ -5,6 +5,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { alternates } from "@/i18n/seo";
 import SiteHeader from "@/components/SiteHeader";
+import MetaEvent from "@/components/MetaEvent";
 import TrackPreviewPlayer from "@/components/TrackPreviewPlayer";
 import TrackDownloadButton from "@/components/TrackDownloadButton";
 import FavoriteButton from "@/components/FavoriteButton";
@@ -115,6 +116,15 @@ export default async function MusicaPage({
 
   return (
     <div className="flex flex-1 flex-col">
+      <MetaEvent
+        event="ViewContent"
+        params={{
+          content_type: "product",
+          content_ids: [track.slug ?? track.id],
+          content_name: track.title,
+          content_category: track.brand,
+        }}
+      />
       <SiteHeader />
       <main className="flex-1 px-6 py-12">
         <div className="mx-auto max-w-3xl">

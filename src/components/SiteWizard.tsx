@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { criarEncomenda } from "@/app/[locale]/encomenda/actions";
 import { ESTILOS } from "@/lib/estilos";
 import { getEncomendaPreco } from "@/lib/plans";
+import { trackMeta } from "@/lib/meta";
 import { CheckIcon } from "@/components/icons";
 
 type Status = "idle" | "submitting" | "success" | "error";
@@ -50,6 +51,14 @@ export default function SiteWizard() {
       setErrorMessage(result.error ?? t("erroIniciarPagamento"));
       return;
     }
+
+    const precoEnc = getEncomendaPreco(locale);
+    trackMeta("InitiateCheckout", {
+      value: precoEnc.cents / 100,
+      currency: precoEnc.currency.toUpperCase(),
+      content_type: "product",
+      content_name: "Musica personalizada",
+    });
 
     window.location.href = result.checkoutUrl;
   }
