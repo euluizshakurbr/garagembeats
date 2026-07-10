@@ -12,7 +12,7 @@ import { PLANS, getPlanPreco } from "@/lib/plans";
 import {
   YouTubeIcon,
   TikTokIcon,
-  KwaiIcon,
+  SpotifyIcon,
   InstagramIcon,
   FacebookIcon,
 } from "@/components/icons";
@@ -20,7 +20,7 @@ import {
 const PLATFORMS = [
   { name: "YouTube", Icon: YouTubeIcon },
   { name: "TikTok", Icon: TikTokIcon },
-  { name: "Kwai", Icon: KwaiIcon },
+  { name: "Spotify", Icon: SpotifyIcon },
   { name: "Instagram", Icon: InstagramIcon },
   { name: "Facebook", Icon: FacebookIcon },
 ];

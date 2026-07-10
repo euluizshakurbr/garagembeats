@@ -83,6 +83,14 @@ export function KwaiIcon({ className = "" }: { className?: string }) {
   );
 }
 
+export function SpotifyIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg className={className} width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm4.6 14.4a.62.62 0 0 1-.86.21c-2.35-1.44-5.3-1.76-8.79-.96a.62.62 0 1 1-.28-1.22c3.8-.87 7.08-.5 9.72 1.11.3.18.39.57.21.86Zm1.23-2.74a.78.78 0 0 1-1.07.26c-2.69-1.65-6.79-2.13-9.97-1.17a.78.78 0 1 1-.45-1.5c3.63-1.09 8.15-.56 11.24 1.34.37.23.48.71.25 1.07Zm.11-2.85C14.72 8.96 9.6 8.79 6.63 9.69a.94.94 0 1 1-.54-1.8c3.41-1.03 9.06-.83 12.63 1.29a.94.94 0 0 1-.96 1.61Z" />
+    </svg>
+  );
+}
+
 export function InstagramIcon({ className = "" }: { className?: string }) {
   return (
     <svg
