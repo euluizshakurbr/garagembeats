@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
+import { trackMeta } from "@/lib/meta";
 
 export default function AuthForm({
   mode,
@@ -71,6 +72,9 @@ export default function AuthForm({
       setErrorMessage(traduzErro(error.message));
       return;
     }
+
+    // Conta criada com sucesso — evento de conversão (Meta Pixel)
+    trackMeta("CompleteRegistration");
 
     // Sem sessão = confirmação de e-mail está ativada no Supabase.
     if (!data.session) {

@@ -12,6 +12,7 @@ import "../globals.css";
 // ID público do Google Analytics (aparece no HTML, não é segredo). Usa a
 // variável de ambiente se existir; senão, cai neste valor fixo.
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "G-MN437MJC3Q";
+const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "2103873633526441";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -84,7 +85,9 @@ export default async function LocaleLayout({
             {children}
             <SiteFooter />
           </AudioPlayerProvider>
-          {GA_ID && <CookieConsent gaId={GA_ID} />}
+          {(GA_ID || META_PIXEL_ID) && (
+            <CookieConsent gaId={GA_ID} metaPixelId={META_PIXEL_ID} />
+          )}
         </NextIntlClientProvider>
       </body>
     </html>

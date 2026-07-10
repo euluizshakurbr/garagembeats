@@ -4,10 +4,17 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
+import MetaPixel from "@/components/MetaPixel";
 
 const CHAVE = "cookie-consent";
 
-export default function CookieConsent({ gaId }: { gaId: string }) {
+export default function CookieConsent({
+  gaId,
+  metaPixelId,
+}: {
+  gaId?: string;
+  metaPixelId?: string;
+}) {
   const t = useTranslations("cookies");
   const [consent, setConsent] = useState<
     "accepted" | "refused" | "pending" | "loading"
@@ -27,7 +34,8 @@ export default function CookieConsent({ gaId }: { gaId: string }) {
 
   return (
     <>
-      {consent === "accepted" && <GoogleAnalytics gaId={gaId} />}
+      {consent === "accepted" && gaId && <GoogleAnalytics gaId={gaId} />}
+      {consent === "accepted" && metaPixelId && <MetaPixel pixelId={metaPixelId} />}
 
       {consent === "pending" && (
         <div className="fixed inset-x-0 bottom-0 z-[60] p-4">

@@ -8,10 +8,11 @@ import ManageSubscriptionButton from "@/components/ManageSubscriptionButton";
 import LogoutButton from "@/components/LogoutButton";
 import PerfilForm from "@/components/PerfilForm";
 import PayOrderButton from "@/components/PayOrderButton";
+import MetaPurchase from "@/components/MetaPurchase";
 import SupabaseSetupNotice from "@/components/SupabaseSetupNotice";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
-import { getPlan, getPlanPreco } from "@/lib/plans";
+import { getPlan, getPlanPreco, getEncomendaPreco } from "@/lib/plans";
 import {
   confirmarPagamentoEncomenda,
   confirmarAssinatura,
@@ -172,11 +173,25 @@ export default async function ContaPage({
           />
 
           {pedido && (
-            <div className="mt-6 rounded-xl border border-[#CC1111]/40 bg-[#1a0808] p-4 text-sm text-white">
-              {t("pagamentoEncomendaRecebido")}
-            </div>
+            <>
+              <MetaPurchase
+                value={getEncomendaPreco(locale).cents / 100}
+                currency={getEncomendaPreco(locale).currency}
+                eventId={`enc_${pedido}`}
+              />
+              <div className="mt-6 rounded-xl border border-[#CC1111]/40 bg-[#1a0808] p-4 text-sm text-white">
+                {t("pagamentoEncomendaRecebido")}
+              </div>
+            </>
           )}
 
+          {session_id && preco && (
+            <MetaPurchase
+              value={preco.cents / 100}
+              currency={preco.currency}
+              eventId={`sub_${session_id}`}
+            />
+          )}
           {session_id && (
             <div className="mt-6 rounded-xl border border-[#CC1111]/40 bg-[#1a0808] p-4 text-sm text-white">
               {t("pagamentoAssinaturaRecebido")}
