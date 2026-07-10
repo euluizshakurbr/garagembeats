@@ -12,13 +12,23 @@ import ShareButton from "@/components/ShareButton";
 import { createClient } from "@/lib/supabase/server";
 import type { Track } from "@/lib/types";
 
-const getTrack = cache(async (id: string) => {
+const getTrack = cache(async (slugOrId: string) => {
   const supabase = await createClient();
-  const { data } = await supabase
+  // Primeiro tenta por slug (URL amigável); se não achar e parecer um id
+  // (uuid), tenta por id — assim links antigos continuam funcionando.
+  let { data } = await supabase
     .from("tracks")
     .select("*")
-    .eq("id", id)
+    .eq("slug", slugOrId)
     .maybeSingle();
+
+  if (!data && /^[0-9a-f-]{36}$/i.test(slugOrId)) {
+    ({ data } = await supabase
+      .from("tracks")
+      .select("*")
+      .eq("id", slugOrId)
+      .maybeSingle());
+  }
   return (data as Track | null) ?? null;
 });
 
@@ -52,7 +62,7 @@ export async function generateMetadata({
   return {
     title: track.title,
     description,
-    alternates: alternates(`/musica/${id}`, locale),
+    alternates: alternates(`/musica/${track.slug ?? id}`, locale),
     openGraph: {
       title: `${track.title} — ${track.brand}`,
       description,
@@ -182,7 +192,7 @@ export default async function MusicaPage({
                   initialFavorited={isFavorited}
                   isLoggedIn={isLoggedIn}
                 />
-                <ShareButton trackId={track.id} />
+                <ShareButton trackId={track.slug ?? track.id} />
               </div>
             </div>
           </div>
@@ -198,7 +208,10 @@ export default async function MusicaPage({
                   return (
                     <Link
                       key={rel.id}
-                      href={{ pathname: "/musica/[id]", params: { id: rel.id } }}
+                      href={{
+                        pathname: "/musica/[id]",
+                        params: { id: rel.slug ?? rel.id },
+                      }}
                       className="group flex flex-col rounded-2xl border border-[#1a1a1a] bg-[#111] p-3 transition-colors hover:border-[#333]"
                     >
                       <div className="relative aspect-square overflow-hidden rounded-xl bg-gradient-to-br from-[#1a0000] to-[#3a0a0a]">

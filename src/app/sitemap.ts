@@ -40,21 +40,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const supabase = createAdminClient();
     const { data } = await supabase
       .from("tracks")
-      .select("id, created_at")
+      .select("id, slug, created_at")
       .order("created_at", { ascending: false });
 
-    musicas = (data ?? []).map((track) => ({
-      url: `${BASE}${musicaPath(track.id, routing.defaultLocale)}`,
-      lastModified: new Date(track.created_at),
-      changeFrequency: "monthly",
-      priority: 0.6,
-      alternates: {
-        languages: {
-          pt: `${BASE}${musicaPath(track.id, "pt")}`,
-          en: `${BASE}${musicaPath(track.id, "en")}`,
+    musicas = (data ?? []).map((track) => {
+      const seg = track.slug ?? track.id;
+      return {
+        url: `${BASE}${musicaPath(seg, routing.defaultLocale)}`,
+        lastModified: new Date(track.created_at),
+        changeFrequency: "monthly",
+        priority: 0.6,
+        alternates: {
+          languages: {
+            pt: `${BASE}${musicaPath(seg, "pt")}`,
+            en: `${BASE}${musicaPath(seg, "en")}`,
+          },
         },
-      },
-    }));
+      };
+    });
   } catch {
     // Se o Supabase falhar, o sitemap ainda sai com as páginas fixas.
   }

@@ -3,6 +3,24 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { slugify } from "@/lib/slug";
+
+// Gera um slug único a partir do título (acrescenta -2, -3... se já existir).
+async function slugUnico(
+  admin: ReturnType<typeof createAdminClient>,
+  title: string
+) {
+  const base = slugify(title) || "musica";
+  const { data } = await admin
+    .from("tracks")
+    .select("slug")
+    .ilike("slug", `${base}%`);
+  const usados = new Set((data ?? []).map((t) => t.slug));
+  if (!usados.has(base)) return base;
+  let n = 2;
+  while (usados.has(`${base}-${n}`)) n++;
+  return `${base}-${n}`;
+}
 
 async function isAdmin(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -35,6 +53,9 @@ export async function subirMusica(data: NovaMusica) {
     return { error: "Preencha todos os campos obrigatórios." };
   }
 
+  const admin = createAdminClient();
+  const slug = await slugUnico(admin, data.title);
+
   const { error: insertError } = await supabase.from("tracks").insert({
     title: data.title,
     brand: data.brand,
@@ -42,6 +63,7 @@ export async function subirMusica(data: NovaMusica) {
     audio_path: data.audioPath,
     cover_path: data.coverPath,
     duration_seconds: data.duration,
+    slug,
   });
 
   if (insertError) {

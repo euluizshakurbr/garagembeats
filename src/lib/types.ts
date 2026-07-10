@@ -6,6 +6,7 @@ export interface Track {
   audio_path: string;
   cover_path: string | null;
   duration_seconds: number | null;
+  slug: string | null;
   created_at: string;
 }
 

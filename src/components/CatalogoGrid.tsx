@@ -304,7 +304,7 @@ function TrackCard({
             initialFavorited={isFavorited}
             isLoggedIn={isLoggedIn}
           />
-          <ShareButton trackId={track.id} />
+          <ShareButton trackId={track.slug ?? track.id} />
         </div>
 
         {duracao && (
@@ -314,7 +314,7 @@ function TrackCard({
         )}
       </div>
       <Link
-        href={{ pathname: "/musica/[id]", params: { id: track.id } }}
+        href={{ pathname: "/musica/[id]", params: { id: track.slug ?? track.id } }}
         className="mt-3 font-semibold text-white transition-colors hover:text-[#CC1111]"
       >
         {track.title}
@@ -399,7 +399,7 @@ function TrackRow({
         />
 
         <Link
-          href={{ pathname: "/musica/[id]", params: { id: track.id } }}
+          href={{ pathname: "/musica/[id]", params: { id: track.slug ?? track.id } }}
           className="min-w-0 flex-1 truncate font-semibold text-white transition-colors hover:text-[#CC1111]"
         >
           {track.title}
@@ -435,7 +435,7 @@ function TrackRow({
             initialFavorited={isFavorited}
             isLoggedIn={isLoggedIn}
           />
-          <ShareButton trackId={track.id} />
+          <ShareButton trackId={track.slug ?? track.id} />
           <TrackDownloadButton
             trackId={track.id}
             audioPath={track.audio_path}
