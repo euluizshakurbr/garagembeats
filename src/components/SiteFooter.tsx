@@ -17,7 +17,7 @@ export default async function SiteFooter() {
             <Link href="/" className="inline-block">
               <Logo />
             </Link>
-            <p className="mt-4 text-sm text-[#888]">{t("home.footerTagline")}</p>
+            <p className="mt-4 text-sm text-[#888]">{t("home.footerSobre")}</p>
             <p className="mt-3 flex items-center gap-1.5 text-xs text-[#555]">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <rect x="5" y="11" width="14" height="9" rx="2" />
