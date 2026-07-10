@@ -11,6 +11,7 @@ const ROUTES = [
   "/catalogo",
   "/planos",
   "/encomenda",
+  "/sobre",
   "/termos",
   "/privacidade",
 ];

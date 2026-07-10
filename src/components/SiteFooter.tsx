@@ -3,7 +3,7 @@ import { Link } from "@/i18n/navigation";
 import Logo from "@/components/Logo";
 
 // Troque aqui pelo e-mail de contato que você quer exibir no site.
-const CONTACT_EMAIL = "suporteinfomogi@gmail.com";
+const CONTACT_EMAIL = "beats@garagemmaster.com.br";
 
 export default async function SiteFooter() {
   const t = await getTranslations();
@@ -38,6 +38,9 @@ export default async function SiteFooter() {
               </Link>
               <Link href="/encomenda" className="text-[#888] transition-colors hover:text-white">
                 {t("nav.encomenda")}
+              </Link>
+              <Link href="/sobre" className="text-[#888] transition-colors hover:text-white">
+                {t("sobre.label")}
               </Link>
             </div>
 

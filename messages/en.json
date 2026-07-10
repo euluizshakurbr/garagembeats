@@ -21,6 +21,24 @@
     "recusar": "Decline",
     "saibaMais": "Learn more"
   },
+  "sobre": {
+    "label": "About",
+    "titulo": "Music made for car lovers",
+    "subtitulo": "Exclusive tracks and custom songs for people who live and breathe cars.",
+    "p1": "Garagem Beats was born from two passions coming together: cars and music. We create exclusive soundtracks for you to use in your videos, Reels and YouTube — with no copyright headaches.",
+    "p2": "Every track in the catalog is crafted to match the automotive vibe: from a chill cruise to the heavy roar of the garage. All copyright-free, so you can post on any platform without the risk of takedowns.",
+    "p3": "Want something unique? We compose a custom song inspired by your car's story — 100% yours, made to order.",
+    "valoresTitulo": "What we offer",
+    "v1t": "Exclusive tracks",
+    "v1d": "A catalog of original music, ready to download.",
+    "v2t": "Copyright-free",
+    "v2d": "Use them in your videos with no strikes or blocks.",
+    "v3t": "Custom songs",
+    "v3d": "A track made from scratch, inspired by your car.",
+    "empresa": "Garagem Beats is a service by Luiz Nascimento Mídia e Tecnologia.",
+    "ctaTitulo": "Ready to listen?",
+    "ctaBotao": "Browse the catalog"
+  },
   "nav": {
     "catalogo": "Catalog",
     "planos": "Plans",

@@ -21,6 +21,24 @@
     "recusar": "Recusar",
     "saibaMais": "Saiba mais"
   },
+  "sobre": {
+    "label": "Sobre",
+    "titulo": "Música feita pra quem ama carro",
+    "subtitulo": "Trilhas exclusivas e músicas personalizadas para quem vive o mundo automotivo.",
+    "p1": "A Garagem Beats nasceu do encontro entre duas paixões: carros e música. Criamos trilhas sonoras exclusivas para você usar nos seus vídeos, Reels e YouTube — sem dor de cabeça com direitos autorais.",
+    "p2": "Cada faixa do catálogo é pensada pra combinar com a estética automotiva: do rolê tranquilo ao ronco pesado da garagem. Tudo com licença livre de copyright, pra você postar em qualquer plataforma sem risco de bloqueio.",
+    "p3": "Quer algo único? A gente compõe uma música personalizada, inspirada na história do seu carro — 100% sua, feita sob encomenda.",
+    "valoresTitulo": "O que oferecemos",
+    "v1t": "Trilhas exclusivas",
+    "v1d": "Catálogo com músicas originais, prontas pra baixar.",
+    "v2t": "Livre de copyright",
+    "v2d": "Use nos seus vídeos sem strike nem bloqueio.",
+    "v3t": "Música personalizada",
+    "v3d": "Uma faixa feita do zero, inspirada no seu carro.",
+    "empresa": "Garagem Beats é um serviço da Luiz Nascimento Mídia e Tecnologia.",
+    "ctaTitulo": "Pronto pra ouvir?",
+    "ctaBotao": "Ver catálogo"
+  },
   "nav": {
     "catalogo": "Catálogo",
     "planos": "Planos",
