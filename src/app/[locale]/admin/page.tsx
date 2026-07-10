@@ -1,7 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import SiteHeader from "@/components/SiteHeader";
 import AdminNav from "@/components/AdminNav";
-import UploadTrackForm from "@/components/UploadTrackForm";
+import AdminUpload from "@/components/AdminUpload";
 import AdminTrackItem from "@/components/AdminTrackItem";
 import { createClient } from "@/lib/supabase/server";
 import type { Track } from "@/lib/types";
@@ -38,7 +38,7 @@ export default async function AdminPage() {
           </h1>
           <p className="mt-2 text-[#888]">{t("adicionarTrilha")}</p>
           <div className="mt-8">
-            <UploadTrackForm />
+            <AdminUpload />
           </div>
 
           <div className="mt-14">
