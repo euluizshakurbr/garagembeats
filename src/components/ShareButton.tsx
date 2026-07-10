@@ -1,14 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 export default function ShareButton({ trackId }: { trackId: string }) {
   const t = useTranslations("catalogo");
+  const locale = useLocale();
   const [copiado, setCopiado] = useState(false);
 
   async function handleClick() {
-    const url = `${window.location.origin}/catalogo?musica=${trackId}`;
+    const slug = locale === "en" ? "song" : "musica";
+    const url = `${window.location.origin}/${locale}/${slug}/${trackId}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({ url });
+        return;
+      } catch {
+        // usuário cancelou ou share indisponível — cai pro copiar link
+      }
+    }
     await navigator.clipboard.writeText(url);
     setCopiado(true);
     setTimeout(() => setCopiado(false), 2000);

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import TrackDownloadButton from "@/components/TrackDownloadButton";
 import TrackPreviewPlayer from "@/components/TrackPreviewPlayer";
 import FavoriteButton from "@/components/FavoriteButton";
@@ -312,7 +313,12 @@ function TrackCard({
           </span>
         )}
       </div>
-      <p className="mt-3 font-semibold text-white">{track.title}</p>
+      <Link
+        href={{ pathname: "/musica/[id]", params: { id: track.id } }}
+        className="mt-3 font-semibold text-white transition-colors hover:text-[#CC1111]"
+      >
+        {track.title}
+      </Link>
       <div className="mt-1 flex flex-wrap items-center gap-1">
         <Tag>{track.brand}</Tag>
         {track.estilo && (
@@ -392,9 +398,12 @@ function TrackRow({
           className="shrink-0"
         />
 
-        <p className="min-w-0 flex-1 truncate font-semibold text-white">
+        <Link
+          href={{ pathname: "/musica/[id]", params: { id: track.id } }}
+          className="min-w-0 flex-1 truncate font-semibold text-white transition-colors hover:text-[#CC1111]"
+        >
           {track.title}
-        </p>
+        </Link>
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-2">

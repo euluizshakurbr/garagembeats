@@ -8,6 +8,7 @@ export const routing = defineRouting({
   pathnames: {
     "/": "/",
     "/catalogo": { pt: "/catalogo", en: "/catalog" },
+    "/musica/[id]": { pt: "/musica/[id]", en: "/song/[id]" },
     "/planos": { pt: "/planos", en: "/plans" },
     "/encomenda": { pt: "/encomenda", en: "/custom-music" },
     "/conta": { pt: "/conta", en: "/account" },
