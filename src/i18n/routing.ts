@@ -15,6 +15,8 @@ export const routing = defineRouting({
     "/conta": { pt: "/conta", en: "/account" },
     "/login": "/login",
     "/cadastro": { pt: "/cadastro", en: "/signup" },
+    "/esqueci-senha": { pt: "/esqueci-senha", en: "/forgot-password" },
+    "/redefinir-senha": { pt: "/redefinir-senha", en: "/reset-password" },
     "/admin": "/admin",
     "/admin/painel": "/admin/painel",
     "/admin/depoimentos": "/admin/depoimentos",
