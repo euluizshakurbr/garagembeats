@@ -370,11 +370,11 @@ function TrackCard({
       </div>
       <Link
         href={{ pathname: "/musica/[id]", params: { id: track.slug ?? track.id } }}
-        className="mt-3 font-semibold text-white transition-colors hover:text-[#CC1111]"
+        className="mt-3 line-clamp-2 block text-sm font-semibold text-white transition-colors hover:text-[#CC1111]"
       >
         {track.title}
       </Link>
-      <div className="mt-1 flex flex-wrap items-center gap-1">
+      <div className="mt-1.5 flex flex-wrap items-center gap-1">
         <Tag>{track.brand}</Tag>
         {track.estilo && (
           <Tag>
@@ -382,20 +382,19 @@ function TrackCard({
           </Tag>
         )}
       </div>
-      <div className="mt-auto flex items-center justify-between pt-2">
-        {track.downloadsTotal > 0 ? (
-          <span className="text-[11px] text-[#555]">
+      <div className="mt-auto pt-3">
+        {track.downloadsTotal > 0 && (
+          <p className="mb-2 text-[11px] text-[#555]">
             {track.downloadsTotal}{" "}
             {track.downloadsTotal === 1 ? t("download") : t("downloads")}
-          </span>
-        ) : (
-          <span />
+          </p>
         )}
         <TrackDownloadButton
           trackId={track.id}
           audioPath={track.audio_path}
           title={track.title}
           isLoggedIn={isLoggedIn}
+          full
         />
       </div>
     </div>

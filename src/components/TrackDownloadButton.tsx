@@ -10,11 +10,13 @@ export default function TrackDownloadButton({
   audioPath,
   title,
   isLoggedIn,
+  full = false,
 }: {
   trackId: string;
   audioPath: string;
   title: string;
   isLoggedIn: boolean;
+  full?: boolean;
 }) {
   const t = useTranslations("catalogo");
   const router = useRouter();
@@ -46,16 +48,18 @@ export default function TrackDownloadButton({
   }
 
   return (
-    <div className="flex flex-col items-end gap-1">
+    <div className={`flex flex-col gap-1 ${full ? "w-full items-stretch" : "items-end"}`}>
       <button
         onClick={handleClick}
         disabled={status === "loading"}
-        className="rounded-lg bg-[#CC1111] px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-[#aa0e0e] disabled:opacity-60"
+        className={`rounded-lg bg-[#CC1111] px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-[#aa0e0e] disabled:opacity-60 ${
+          full ? "w-full text-center" : ""
+        }`}
       >
         {status === "loading" ? t("gerando") : t("baixar")}
       </button>
       {status === "error" && (
-        <span className="max-w-[140px] text-right text-[11px] text-[#CC1111]">
+        <span className={`text-[11px] text-[#CC1111] ${full ? "text-center" : "max-w-[140px] text-right"}`}>
           {errorMessage}
         </span>
       )}
