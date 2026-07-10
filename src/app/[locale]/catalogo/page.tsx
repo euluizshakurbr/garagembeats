@@ -96,7 +96,7 @@ export default async function CatalogoPage() {
       <SiteHeader />
       <main className="flex-1 px-6 py-16">
         <div className="mx-auto max-w-5xl">
-          <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <h1 className="text-3xl font-bold text-white sm:text-4xl">
                 {t("titulo")}
@@ -105,7 +105,7 @@ export default async function CatalogoPage() {
             </div>
             <Link
               href="/planos"
-              className="rounded-xl border border-[#333] px-4 py-2 text-sm font-semibold text-white transition-colors hover:border-[#555]"
+              className="rounded-lg border border-[#2a2a2a] px-3 py-1.5 text-xs font-semibold text-[#888] transition-colors hover:border-[#555] hover:text-white"
             >
               {t("verPlanos")}
             </Link>
@@ -117,10 +117,10 @@ export default async function CatalogoPage() {
             <p className="mt-10 text-[#555]">{t("nenhumaMusica")}</p>
           ) : (
             <>
-              <div className="mt-8 flex flex-wrap gap-8 border-b border-[#1a1a1a] pb-8">
-                <Stat value={String(tracks.length)} label={t("statTrilhas")} />
-                <Stat value={String(totalDownloads)} label={t("statDownloads")} />
-              </div>
+              <p className="mt-3 text-xs text-[#555]">
+                {tracks.length} {t("statTrilhas")} · {totalDownloads}{" "}
+                {t("statDownloads")}
+              </p>
               <CatalogoGrid
                 tracks={tracks}
                 isLoggedIn={isLoggedIn}
@@ -130,15 +130,6 @@ export default async function CatalogoPage() {
           )}
         </div>
       </main>
-    </div>
-  );
-}
-
-function Stat({ value, label }: { value: string; label: string }) {
-  return (
-    <div>
-      <p className="text-2xl font-black text-white">{value}</p>
-      <p className="text-xs text-[#555]">{label}</p>
     </div>
   );
 }

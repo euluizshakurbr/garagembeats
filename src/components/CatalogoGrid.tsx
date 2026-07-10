@@ -121,15 +121,15 @@ export default function CatalogoGrid({
         </div>
       )}
 
-      <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative w-full sm:w-64">
+      <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="relative w-full sm:flex-1 sm:max-w-lg">
           <svg
-            className="absolute top-1/2 left-3 -translate-y-1/2"
-            width="16"
-            height="16"
+            className="absolute top-1/2 left-4 -translate-y-1/2"
+            width="20"
+            height="20"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#555"
+            stroke="#888"
             strokeWidth="2"
           >
             <circle cx="11" cy="11" r="7" />
@@ -140,7 +140,7 @@ export default function CatalogoGrid({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t("buscarPlaceholder")}
-            className="w-full rounded-xl border border-[#1a1a1a] bg-[#111] py-2.5 pl-9 pr-3 text-sm text-white outline-none placeholder-[#555] focus:border-[#CC1111]"
+            className="w-full rounded-2xl border border-[#2a2a2a] bg-[#111] py-3.5 pl-12 pr-4 text-base text-white outline-none transition-colors placeholder-[#666] focus:border-[#CC1111]"
           />
         </div>
 
