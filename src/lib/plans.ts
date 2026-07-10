@@ -44,7 +44,7 @@ export const PLANS: Plan[] = [
     priceLabelUsd: "US$24.99",
     priceCentsUsd: 2499,
     downloadLimit: null,
-    encomendasIncluidas: 1,
+    encomendasIncluidas: 0,
   },
 ];
 
@@ -54,8 +54,8 @@ export function getPlan(id: string) {
 
 // Encomenda (música personalizada) — preço fixo, fora dos planos
 export const ENCOMENDA_PRECO = {
-  brl: { cents: 2499, label: "R$24,99" },
-  usd: { cents: 699, label: "US$6.99" },
+  brl: { cents: 9900, label: "R$99,00" },
+  usd: { cents: 1999, label: "US$19.99" },
 };
 
 export function getPlanPreco(plan: Plan, locale: string) {
