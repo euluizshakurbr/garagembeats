@@ -9,7 +9,9 @@ import SiteFooter from "@/components/SiteFooter";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import "../globals.css";
 
-const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+// ID público do Google Analytics (aparece no HTML, não é segredo). Usa a
+// variável de ambiente se existir; senão, cai neste valor fixo.
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "G-MN437MJC3Q";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
