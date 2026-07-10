@@ -4,6 +4,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { alternates } from "@/i18n/seo";
 import SiteHeader from "@/components/SiteHeader";
 import TrackPreviewPlayer from "@/components/TrackPreviewPlayer";
+import Depoimentos from "@/components/Depoimentos";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import type { Track } from "@/lib/types";
@@ -318,6 +319,8 @@ export default async function Home() {
             </Link>
           </div>
         </section>
+
+        <Depoimentos />
 
         {/* CTA final */}
         {!isLoggedIn && (

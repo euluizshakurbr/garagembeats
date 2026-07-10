@@ -1,3 +1,14 @@
+export interface Depoimento {
+  id: string;
+  nome: string;
+  carro: string | null;
+  texto: string;
+  nota: number | null;
+  ordem: number;
+  ativo: boolean;
+  created_at: string;
+}
+
 export interface Track {
   id: string;
   title: string;

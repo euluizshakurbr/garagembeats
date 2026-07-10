@@ -4,6 +4,7 @@ import { alternates } from "@/i18n/seo";
 import { Link } from "@/i18n/navigation";
 import SiteHeader from "@/components/SiteHeader";
 import SubscribeButton from "@/components/SubscribeButton";
+import Depoimentos from "@/components/Depoimentos";
 import SupabaseSetupNotice from "@/components/SupabaseSetupNotice";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -176,6 +177,10 @@ export default async function PlanosPage() {
           </div>
 
           <p className="mt-6 text-xs text-[#555]">{t("pagamentoSeguro")}</p>
+        </div>
+
+        <div className="mt-16">
+          <Depoimentos />
         </div>
 
         {/* FAQ */}

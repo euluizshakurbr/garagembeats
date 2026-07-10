@@ -17,6 +17,9 @@ export default function AdminNav() {
       <NavLink href="/admin/pedidos" exact className={linkClass} activeClassName={activeClass}>
         Pedidos
       </NavLink>
+      <NavLink href="/admin/depoimentos" exact className={linkClass} activeClassName={activeClass}>
+        Depoimentos
+      </NavLink>
     </nav>
   );
 }
