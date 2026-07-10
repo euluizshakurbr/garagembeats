@@ -6,7 +6,7 @@ import { getMessages, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import AudioPlayerProvider from "@/components/audio/AudioPlayerProvider";
 import SiteFooter from "@/components/SiteFooter";
-import GoogleAnalytics from "@/components/GoogleAnalytics";
+import CookieConsent from "@/components/CookieConsent";
 import "../globals.css";
 
 // ID público do Google Analytics (aparece no HTML, não é segredo). Usa a
@@ -84,8 +84,8 @@ export default async function LocaleLayout({
             {children}
             <SiteFooter />
           </AudioPlayerProvider>
+          {GA_ID && <CookieConsent gaId={GA_ID} />}
         </NextIntlClientProvider>
-        {GA_ID && <GoogleAnalytics gaId={GA_ID} />}
       </body>
     </html>
   );

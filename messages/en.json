@@ -15,6 +15,12 @@
     "limiteGratis": "You've used your free download. Subscribe to a plan to download more.",
     "erroGerarLink": "Couldn't generate the download link."
   },
+  "cookies": {
+    "mensagem": "We use cookies to understand how you use the site and improve your experience.",
+    "aceitar": "Accept",
+    "recusar": "Decline",
+    "saibaMais": "Learn more"
+  },
   "nav": {
     "catalogo": "Catalog",
     "planos": "Plans",

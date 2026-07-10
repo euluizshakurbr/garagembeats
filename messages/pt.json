@@ -15,6 +15,12 @@
     "limiteGratis": "Você já usou seu download grátis. Assine um plano para baixar mais.",
     "erroGerarLink": "Não foi possível gerar o link de download."
   },
+  "cookies": {
+    "mensagem": "Usamos cookies para entender como você usa o site e melhorar sua experiência.",
+    "aceitar": "Aceitar",
+    "recusar": "Recusar",
+    "saibaMais": "Saiba mais"
+  },
   "nav": {
     "catalogo": "Catálogo",
     "planos": "Planos",
