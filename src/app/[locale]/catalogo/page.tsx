@@ -7,6 +7,7 @@ import CatalogoGrid from "@/components/CatalogoGrid";
 import SupabaseSetupNotice from "@/components/SupabaseSetupNotice";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { getEncomendaPreco } from "@/lib/plans";
 import type { Track } from "@/lib/types";
 
 const TRINTA_DIAS_MS = 30 * 24 * 60 * 60 * 1000;
@@ -23,6 +24,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function CatalogoPage() {
   const t = await getTranslations("catalogo");
+  const locale = await getLocale();
+  const encomendaPreco = getEncomendaPreco(locale).label;
   const configured = isSupabaseConfigured();
   let tracks: Array<
     Track & { coverUrl: string | null; downloadsTotal: number; downloads30d: number }
@@ -113,19 +116,40 @@ export default async function CatalogoPage() {
 
           {!configured ? (
             <SupabaseSetupNotice />
-          ) : tracks.length === 0 ? (
-            <p className="mt-10 text-[#555]">{t("nenhumaMusica")}</p>
           ) : (
             <>
-              <p className="mt-3 text-xs text-[#555]">
-                {tracks.length} {t("statTrilhas")} · {totalDownloads}{" "}
-                {t("statDownloads")}
-              </p>
-              <CatalogoGrid
-                tracks={tracks}
-                isLoggedIn={isLoggedIn}
-                favoritedIds={favoritedIds}
-              />
+              {tracks.length === 0 ? (
+                <p className="mt-10 text-[#555]">{t("nenhumaMusica")}</p>
+              ) : (
+                <>
+                  <p className="mt-3 text-xs text-[#555]">
+                    {tracks.length} {t("statTrilhas")} · {totalDownloads}{" "}
+                    {t("statDownloads")}
+                  </p>
+                  <CatalogoGrid
+                    tracks={tracks}
+                    isLoggedIn={isLoggedIn}
+                    favoritedIds={favoritedIds}
+                  />
+                </>
+              )}
+
+              <div className="mt-10 flex flex-col items-center justify-between gap-3 rounded-2xl border border-[#CC1111]/30 bg-gradient-to-b from-[#1a0808] to-[#111] px-5 py-5 text-center sm:flex-row sm:text-left">
+                <div>
+                  <p className="font-semibold text-white">
+                    {t("encomendaBannerTitulo")}
+                  </p>
+                  <p className="mt-1 text-sm text-[#888]">
+                    {t("encomendaBannerDesc", { preco: encomendaPreco })}
+                  </p>
+                </div>
+                <Link
+                  href="/encomenda"
+                  className="shrink-0 rounded-xl bg-[#CC1111] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#aa0e0e]"
+                >
+                  {t("encomendaBannerCta")}
+                </Link>
+              </div>
             </>
           )}
         </div>
