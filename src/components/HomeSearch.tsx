@@ -23,9 +23,9 @@ export default function HomeSearch() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mx-auto mt-8 flex w-full max-w-xl items-center gap-2"
+      className="mx-auto mt-8 flex w-full max-w-xl flex-col gap-2 sm:flex-row sm:items-center"
     >
-      <div className="relative flex-1">
+      <div className="relative w-full sm:flex-1">
         <svg
           className="absolute top-1/2 left-4 -translate-y-1/2"
           width="20"
@@ -49,7 +49,7 @@ export default function HomeSearch() {
       </div>
       <button
         type="submit"
-        className="shrink-0 rounded-2xl bg-[#CC1111] px-6 py-3.5 font-semibold text-white transition-colors hover:bg-[#aa0e0e]"
+        className="w-full shrink-0 rounded-2xl bg-[#CC1111] px-6 py-3.5 font-semibold text-white transition-colors hover:bg-[#aa0e0e] sm:w-auto"
       >
         {t("buscarCarroBtn")}
       </button>
