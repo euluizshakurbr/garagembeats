@@ -39,7 +39,7 @@ export default function TrackPreviewPlayer({
         type="button"
         onClick={() => playTrack(track)}
         disabled={isLoading}
-        className={`flex w-full items-center justify-center gap-2 rounded-xl border border-[#333] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:border-[#555] disabled:opacity-60 ${className}`}
+        className={`flex w-full items-center justify-center gap-1.5 whitespace-nowrap rounded-xl border border-[#333] px-2 py-2 text-xs font-semibold text-white transition-colors hover:border-[#555] disabled:opacity-60 sm:gap-2 sm:px-4 sm:py-2.5 sm:text-sm ${className}`}
       >
         {icon} {isPlaying ? t("pausarPrevia") : t("ouvirPreviaBtn")}
       </button>
