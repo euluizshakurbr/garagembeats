@@ -58,7 +58,11 @@ export default function CatalogoGrid({
   const [musicaDestacada, setMusicaDestacada] = useState<string | null>(null);
 
   useEffect(() => {
-    const id = new URLSearchParams(window.location.search).get("musica");
+    const params = new URLSearchParams(window.location.search);
+    const busca = params.get("search");
+    if (busca) setSearch(busca);
+
+    const id = params.get("musica");
     if (!id) return;
     setMusicaDestacada(id);
     requestAnimationFrame(() => {

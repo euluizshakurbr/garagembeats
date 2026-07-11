@@ -3,6 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { alternates } from "@/i18n/seo";
 import SiteHeader from "@/components/SiteHeader";
+import HomeSearch from "@/components/HomeSearch";
 import TrackPreviewPlayer from "@/components/TrackPreviewPlayer";
 import Depoimentos from "@/components/Depoimentos";
 import { createClient } from "@/lib/supabase/server";
@@ -61,7 +62,6 @@ export default async function Home() {
   let getCoverUrl = (_path: string) => "";
   let totalTracks = 0;
   let totalDownloads = 0;
-  let totalAssinantes = 0;
 
   if (isSupabaseConfigured()) {
     const supabase = await createClient();
@@ -79,18 +79,13 @@ export default async function Home() {
       supabase.storage.from("tracks-covers").getPublicUrl(path).data
         .publicUrl;
 
-    const [{ count: tracksCount }, { count: downloadsCount }, { count: assinantesCount }] =
+    const [{ count: tracksCount }, { count: downloadsCount }] =
       await Promise.all([
         supabase.from("tracks").select("id", { count: "exact", head: true }),
         supabase.from("downloads").select("id", { count: "exact", head: true }),
-        supabase
-          .from("subscriptions")
-          .select("user_id", { count: "exact", head: true })
-          .eq("status", "active"),
       ]);
     totalTracks = tracksCount ?? 0;
     totalDownloads = downloadsCount ?? 0;
-    totalAssinantes = assinantesCount ?? 0;
   }
 
   return (
@@ -128,8 +123,10 @@ export default async function Home() {
               ))}
             </div>
 
+            <HomeSearch />
+
             {isLoggedIn ? (
-              <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
                 <Link
                   href="/catalogo"
                   className="inline-flex items-center justify-center rounded-xl bg-[#CC1111] px-8 py-3.5 font-semibold text-white transition-colors hover:bg-[#aa0e0e]"
@@ -145,18 +142,18 @@ export default async function Home() {
               </div>
             ) : (
               <>
-                <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
                   <Link
-                    href="/cadastro"
+                    href="/catalogo"
                     className="inline-flex items-center justify-center rounded-xl bg-[#CC1111] px-8 py-3.5 font-semibold text-white transition-colors hover:bg-[#aa0e0e]"
                   >
-                    {t("criarConta")}
+                    {t("explorarCatalogo")}
                   </Link>
                   <Link
-                    href="/login"
+                    href="/cadastro"
                     className="inline-flex items-center justify-center rounded-xl border border-[#333] px-8 py-3.5 font-semibold text-white transition-colors hover:border-[#555]"
                   >
-                    {t("jaTenhoConta")}
+                    {t("criarConta")}
                   </Link>
                 </div>
                 <div className="mt-5 flex justify-center">
@@ -197,7 +194,6 @@ export default async function Home() {
             <div className="mt-16 flex flex-wrap justify-center gap-8 border-t border-[#1a1a1a] pt-12">
               <Stat value={String(totalTracks)} label={t("statTrilhas")} />
               <Stat value={String(totalDownloads)} label={t("statDownloads")} />
-              <Stat value={String(totalAssinantes)} label={t("statAssinantes")} />
               <Stat value="100%" label={t("statCopyright")} />
             </div>
           </div>
