@@ -400,6 +400,7 @@ function TrackCard({
             audioPath: track.audio_path,
           }}
           full
+          compact
         />
         <TrackDownloadButton
           trackId={track.id}

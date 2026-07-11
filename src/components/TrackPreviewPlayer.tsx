@@ -7,10 +7,12 @@ export default function TrackPreviewPlayer({
   track,
   className = "",
   full = false,
+  compact = false,
 }: {
   track: PlayerTrack;
   className?: string;
   full?: boolean;
+  compact?: boolean;
 }) {
   const t = useTranslations("catalogo");
   const { current, status, playTrack } = useAudioPlayer();
@@ -32,14 +34,18 @@ export default function TrackPreviewPlayer({
     </svg>
   );
 
-  // Modo "botão com texto" (usado no corpo do card, acima do baixar)
+  // Modo "botão com texto" (usado no corpo do card e na página da música).
+  // compact = versão menor no mobile, pros cards estreitos do catálogo.
   if (full) {
+    const sizeClasses = compact
+      ? "gap-1.5 whitespace-nowrap px-2 py-2 text-xs sm:gap-2 sm:px-4 sm:py-2.5 sm:text-sm"
+      : "gap-2 px-4 py-3 text-sm";
     return (
       <button
         type="button"
         onClick={() => playTrack(track)}
         disabled={isLoading}
-        className={`flex w-full items-center justify-center gap-1.5 whitespace-nowrap rounded-xl border border-[#333] px-2 py-2 text-xs font-semibold text-white transition-colors hover:border-[#555] disabled:opacity-60 sm:gap-2 sm:px-4 sm:py-2.5 sm:text-sm ${className}`}
+        className={`flex w-full items-center justify-center rounded-xl border border-[#333] font-semibold text-white transition-colors hover:border-[#555] disabled:opacity-60 ${sizeClasses} ${className}`}
       >
         {icon} {isPlaying ? t("pausarPrevia") : t("ouvirPreviaBtn")}
       </button>

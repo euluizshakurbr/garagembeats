@@ -142,8 +142,7 @@ export default async function MusicaPage({
           </Link>
 
           <div className="mt-6 flex flex-col gap-6 sm:flex-row">
-            <div className="flex w-full max-w-[260px] shrink-0 flex-col gap-2 self-center sm:self-start">
-            <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-gradient-to-br from-[#1a0000] to-[#3a0a0a]">
+            <div className="relative aspect-square w-full max-w-[260px] shrink-0 self-center overflow-hidden rounded-2xl bg-gradient-to-br from-[#1a0000] to-[#3a0a0a] sm:self-start">
               {cover ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={cover} alt={track.title} className="h-full w-full object-cover" />
@@ -156,19 +155,6 @@ export default async function MusicaPage({
                   </svg>
                 </div>
               )}
-              <div className="absolute inset-0 flex items-center justify-center bg-black/25">
-                <TrackPreviewPlayer
-                  track={{
-                    id: track.id,
-                    title: track.title,
-                    brand: track.brand,
-                    coverUrl: cover,
-                    audioPath: track.audio_path,
-                  }}
-                />
-              </div>
-            </div>
-            <p className="text-center text-xs text-[#555]">{t("ouvirPrevia")}</p>
             </div>
 
             <div className="min-w-0 flex-1">
@@ -194,7 +180,17 @@ export default async function MusicaPage({
               </div>
 
               {/* CTA principal */}
-              <div className="mt-6">
+              <div className="mt-6 flex flex-col gap-2">
+                <TrackPreviewPlayer
+                  track={{
+                    id: track.id,
+                    title: track.title,
+                    brand: track.brand,
+                    coverUrl: cover,
+                    audioPath: track.audio_path,
+                  }}
+                  full
+                />
                 <TrackDownloadButton
                   trackId={track.id}
                   audioPath={track.audio_path}
@@ -204,7 +200,7 @@ export default async function MusicaPage({
                   label={t("baixarEssa")}
                 />
                 {!isLoggedIn && (
-                  <p className="mt-2 text-center text-xs text-[#888]">
+                  <p className="text-center text-xs text-[#888]">
                     {t("criarContaBaixar")}
                   </p>
                 )}
