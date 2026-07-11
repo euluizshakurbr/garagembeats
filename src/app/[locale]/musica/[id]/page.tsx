@@ -104,13 +104,47 @@ export default async function MusicaPage({
     .select("id", { count: "exact", head: true })
     .eq("track_id", id);
 
-  const { data: relacionadasData } = await supabase
+  // Recomendações: mesma marca primeiro, depois mesmo estilo, e completa com
+  // recentes se faltar — pra seção nunca ficar vazia (upsell/descoberta).
+  const vistos = new Set<string>([track.id]);
+  const relacionadas: Track[] = [];
+  function addRelacionadas(list: Track[] | null) {
+    for (const tr of list ?? []) {
+      if (relacionadas.length >= 6) break;
+      if (!vistos.has(tr.id)) {
+        vistos.add(tr.id);
+        relacionadas.push(tr);
+      }
+    }
+  }
+
+  const { data: porMarca } = await supabase
     .from("tracks")
     .select("*")
     .eq("brand", track.brand)
-    .neq("id", id)
+    .neq("id", track.id)
     .limit(6);
-  const relacionadas = (relacionadasData ?? []) as Track[];
+  addRelacionadas(porMarca as Track[] | null);
+
+  if (relacionadas.length < 6 && track.estilo) {
+    const { data: porEstilo } = await supabase
+      .from("tracks")
+      .select("*")
+      .eq("estilo", track.estilo)
+      .neq("id", track.id)
+      .limit(6);
+    addRelacionadas(porEstilo as Track[] | null);
+  }
+
+  if (relacionadas.length < 6) {
+    const { data: recentes } = await supabase
+      .from("tracks")
+      .select("*")
+      .neq("id", track.id)
+      .order("created_at", { ascending: false })
+      .limit(12);
+    addRelacionadas(recentes as Track[] | null);
+  }
 
   const cover = coverUrlDe(track);
   const duracao = formatDuracao(track.duration_seconds);
@@ -248,7 +282,7 @@ export default async function MusicaPage({
           {relacionadas.length > 0 && (
             <div className="mt-14">
               <h2 className="text-lg font-semibold text-white">
-                {t("maisDaMarca", { marca: track.brand })}
+                {t("recomendadas")}
               </h2>
               <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
                 {relacionadas.map((rel) => {
