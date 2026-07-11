@@ -39,7 +39,13 @@ export default function MobileNav({ isLoggedIn }: { isLoggedIn: boolean }) {
       </button>
 
       {open && (
-        <nav className="absolute inset-x-0 top-full z-40 border-b border-[#1a1a1a] bg-[#0A0A0A] px-4 py-3 shadow-2xl">
+        <>
+          <div
+            className="fixed inset-0 z-40 bg-black/50"
+            onClick={() => setOpen(false)}
+            aria-hidden="true"
+          />
+          <nav className="absolute inset-x-0 top-full z-50 border-b border-[#1a1a1a] bg-[#0A0A0A] px-4 py-3 shadow-2xl">
           <div className="flex flex-col gap-1 text-sm font-medium">
             <NavLink
               href="/catalogo"
@@ -84,16 +90,26 @@ export default function MobileNav({ isLoggedIn }: { isLoggedIn: boolean }) {
                 />
               </>
             ) : (
-              <Link
-                href="/login"
-                onClick={() => setOpen(false)}
-                className="mt-1 inline-flex items-center justify-center rounded-xl bg-[#CC1111] px-4 py-2.5 font-semibold text-white transition-colors hover:bg-[#aa0e0e]"
-              >
-                {t("entrar")}
-              </Link>
+              <>
+                <Link
+                  href="/login"
+                  onClick={() => setOpen(false)}
+                  className="rounded-lg px-3 py-2.5 text-[#888] transition-colors hover:text-white"
+                >
+                  {t("entrar")}
+                </Link>
+                <Link
+                  href="/cadastro"
+                  onClick={() => setOpen(false)}
+                  className="mt-1 inline-flex items-center justify-center rounded-xl bg-[#CC1111] px-4 py-2.5 font-semibold text-white transition-colors hover:bg-[#aa0e0e]"
+                >
+                  {t("criarConta")}
+                </Link>
+              </>
             )}
           </div>
-        </nav>
+          </nav>
+        </>
       )}
     </div>
   );
@@ -101,5 +117,5 @@ export default function MobileNav({ isLoggedIn }: { isLoggedIn: boolean }) {
 
 const mobilePill =
   "rounded-lg px-3 py-2.5 text-[#888] transition-colors hover:bg-[#161616] hover:text-white";
-const mobilePillActive = "!bg-[#1a1a1a] !text-white";
+const mobilePillActive = "!bg-[#CC1111]/15 !text-white";
 

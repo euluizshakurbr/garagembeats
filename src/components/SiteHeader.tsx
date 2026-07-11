@@ -19,7 +19,7 @@ export default async function SiteHeader() {
   const t = await getTranslations("nav");
 
   return (
-    <header className="relative border-b border-[#1a1a1a] px-4 py-4 sm:px-6">
+    <header className="sticky top-0 z-40 border-b border-[#1a1a1a] bg-[#0A0A0A]/90 px-4 py-4 backdrop-blur-md sm:px-6">
       <div className="mx-auto flex max-w-5xl items-center justify-between">
         <Link href="/">
           <Logo />
@@ -49,12 +49,20 @@ export default async function SiteHeader() {
               />
             </>
           ) : (
-            <Link
-              href="/login"
-              className="rounded-xl bg-[#CC1111] px-4 py-2 font-semibold text-white shadow-lg shadow-[#CC1111]/20 transition-colors hover:bg-[#aa0e0e]"
-            >
-              {t("entrar")}
-            </Link>
+            <>
+              <Link
+                href="/login"
+                className="rounded-lg px-3 py-2 text-[#888] transition-colors hover:text-white"
+              >
+                {t("entrar")}
+              </Link>
+              <Link
+                href="/cadastro"
+                className="rounded-xl bg-[#CC1111] px-4 py-2 font-semibold text-white shadow-lg shadow-[#CC1111]/20 transition-colors hover:bg-[#aa0e0e]"
+              >
+                {t("criarConta")}
+              </Link>
+            </>
           )}
           <div className="ml-2">
             <LocaleSwitcher />
@@ -72,5 +80,5 @@ export default async function SiteHeader() {
 
 const navPill =
   "rounded-lg px-3 py-2 text-[#888] transition-colors hover:bg-[#161616] hover:text-white";
-const navPillActive = "!bg-[#1a1a1a] !text-white";
+const navPillActive = "!bg-[#CC1111]/15 !text-white";
 
