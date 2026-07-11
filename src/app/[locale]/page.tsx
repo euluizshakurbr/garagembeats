@@ -132,21 +132,7 @@ export default async function Home() {
               </div>
             ) : (
               <>
-                <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                  <Link
-                    href="/catalogo"
-                    className="inline-flex items-center justify-center rounded-xl bg-[#CC1111] px-8 py-3.5 font-semibold text-white transition-colors hover:bg-[#aa0e0e]"
-                  >
-                    {t("explorarCatalogo")}
-                  </Link>
-                  <Link
-                    href="/cadastro"
-                    className="inline-flex items-center justify-center rounded-xl border border-[#333] px-8 py-3.5 font-semibold text-white transition-colors hover:border-[#555]"
-                  >
-                    {t("criarConta")}
-                  </Link>
-                </div>
-                <div className="mt-5 flex justify-center">
+                <div className="mt-6 flex justify-center">
                   <span className="inline-flex items-center gap-2 rounded-full border border-[#CC1111]/30 bg-[#CC1111]/10 px-4 py-1.5 text-sm text-white">
                     <svg
                       width="15"
@@ -171,14 +157,6 @@ export default async function Home() {
                 </div>
               </>
             )}
-
-            <p className="mt-4 flex items-center justify-center gap-1.5 text-xs text-[#555]">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="5" y="11" width="14" height="9" rx="2" />
-                <path d="M8 11V7a4 4 0 0 1 8 0v4" />
-              </svg>
-              {t("pagamentoSeguro")}
-            </p>
 
             {/* Stats */}
             <div className="mt-16 border-t border-[#1a1a1a] pt-12">
