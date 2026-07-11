@@ -334,19 +334,30 @@ function TrackCard({
         ) : (
           <CoverFallbackIcon />
         )}
-        <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-          <TrackPreviewPlayer
-            track={{
-              id: track.id,
-              title: track.title,
-              brand: track.brand,
-              coverUrl: track.coverUrl,
-              audioPath: track.audio_path,
-            }}
-          />
+
+        {/* Capa inteira leva pra página da música */}
+        <Link
+          href={{ pathname: "/musica/[id]", params: { id: track.slug ?? track.id } }}
+          aria-label={track.title}
+          className="absolute inset-0 z-10"
+        />
+
+        {/* Play da prévia fica por cima da capa, sem navegar */}
+        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-black/30">
+          <div className="pointer-events-auto">
+            <TrackPreviewPlayer
+              track={{
+                id: track.id,
+                title: track.title,
+                brand: track.brand,
+                coverUrl: track.coverUrl,
+                audioPath: track.audio_path,
+              }}
+            />
+          </div>
         </div>
 
-        <div className="absolute top-2 left-2 flex flex-col gap-1">
+        <div className="pointer-events-none absolute top-2 left-2 z-20 flex flex-col gap-1">
           {isNovo && <Badge color="#CC1111">{t("novo")}</Badge>}
           {isEmAlta && (
             <Badge color="#E87A00">
@@ -357,7 +368,7 @@ function TrackCard({
           )}
         </div>
 
-        <div className="absolute top-2 right-2 flex gap-1.5">
+        <div className="absolute top-2 right-2 z-30 flex gap-1.5">
           <FavoriteButton
             trackId={track.id}
             initialFavorited={isFavorited}
@@ -367,7 +378,7 @@ function TrackCard({
         </div>
 
         {duracao && (
-          <span className="absolute bottom-2 right-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] text-white">
+          <span className="pointer-events-none absolute bottom-2 right-2 z-20 rounded-full bg-black/60 px-2 py-0.5 text-[10px] text-white">
             {duracao}
           </span>
         )}
@@ -431,7 +442,11 @@ function TrackRow({
       }`}
     >
       <div className="flex items-center gap-3">
-        <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-[#1a0000] to-[#3a0a0a]">
+        <Link
+          href={{ pathname: "/musica/[id]", params: { id: track.slug ?? track.id } }}
+          aria-label={track.title}
+          className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-[#1a0000] to-[#3a0a0a]"
+        >
           {track.coverUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -443,7 +458,7 @@ function TrackRow({
           ) : (
             <CoverFallbackIcon size={18} />
           )}
-        </div>
+        </Link>
 
         <TrackPreviewPlayer
           track={{
