@@ -8,6 +8,7 @@ import TrackPreviewPlayer from "@/components/TrackPreviewPlayer";
 import Depoimentos from "@/components/Depoimentos";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { assinarPreviews } from "@/lib/previewUrls";
 import type { Track } from "@/lib/types";
 import { PLANS, getPlanPreco } from "@/lib/plans";
 import {
@@ -60,6 +61,7 @@ export default async function Home() {
   let isLoggedIn = false;
   const tracks: Track[] = [];
   let getCoverUrl = (_path: string) => "";
+  let previewMap: Record<string, string> = {};
 
   if (isSupabaseConfigured()) {
     const supabase = await createClient();
@@ -76,6 +78,8 @@ export default async function Home() {
     getCoverUrl = (path: string) =>
       supabase.storage.from("tracks-covers").getPublicUrl(path).data
         .publicUrl;
+
+    previewMap = await assinarPreviews(tracks.map((track) => track.audio_path));
   }
 
   return (
@@ -221,6 +225,7 @@ export default async function Home() {
                         track.cover_path ? getCoverUrl(track.cover_path) : null
                       }
                       audioPath={track.audio_path}
+                      previewUrl={previewMap[track.audio_path] ?? null}
                       inclusoLabel={t("inclusoAssinatura")}
                     />
                   ))
@@ -325,6 +330,7 @@ function TrackCard({
   gradient,
   coverUrl,
   audioPath,
+  previewUrl,
   inclusoLabel,
 }: {
   title: string;
@@ -332,6 +338,7 @@ function TrackCard({
   gradient: string;
   coverUrl?: string | null;
   audioPath?: string;
+  previewUrl?: string | null;
   inclusoLabel: string;
 }) {
   return (
@@ -371,6 +378,7 @@ function TrackCard({
                 brand,
                 coverUrl: coverUrl ?? null,
                 audioPath,
+                previewUrl,
               }}
             />
           </div>

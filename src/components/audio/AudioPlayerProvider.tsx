@@ -18,6 +18,7 @@ export interface PlayerTrack {
   brand: string;
   coverUrl: string | null;
   audioPath: string;
+  previewUrl?: string | null;
 }
 
 type Status = "idle" | "loading" | "playing" | "paused";
@@ -83,14 +84,31 @@ export default function AudioPlayerProvider({
     setStatus("loading");
     setProgress(0);
 
-    const result = await gerarPreviewUrl(track.audioPath);
-    if (result.error || !result.url) {
-      setStatus("idle");
-      setCurrent(null);
-      return;
+    // Usa o link pré-assinado (entregue com a faixa) pra tocar na hora.
+    // Só chama o servidor se ele não veio pronto.
+    let url = track.previewUrl ?? null;
+    if (!url) {
+      const result = await gerarPreviewUrl(track.audioPath);
+      if (result.error || !result.url) {
+        setStatus("idle");
+        setCurrent(null);
+        return;
+      }
+      url = result.url;
     }
 
-    const audio = new Audio(result.url);
+    const audio = new Audio(url);
+    // Se o link pré-assinado tiver expirado, regenera e tenta de novo.
+    let jaRegenerou = false;
+    audio.addEventListener("error", async () => {
+      if (audioRef.current !== audio || jaRegenerou) return;
+      jaRegenerou = true;
+      const result = await gerarPreviewUrl(track.audioPath);
+      if (result.url && audioRef.current === audio) {
+        audio.src = result.url;
+        audio.play().catch(() => {});
+      }
+    });
     audio.addEventListener("timeupdate", () => {
       if (audio.currentTime >= PREVIEW_SECONDS) {
         audio.pause();

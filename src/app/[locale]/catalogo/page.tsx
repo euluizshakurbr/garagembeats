@@ -8,6 +8,7 @@ import SupabaseSetupNotice from "@/components/SupabaseSetupNotice";
 import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { getEncomendaPreco } from "@/lib/plans";
+import { assinarPreviews } from "@/lib/previewUrls";
 import type { Track } from "@/lib/types";
 
 const TRINTA_DIAS_MS = 30 * 24 * 60 * 60 * 1000;
@@ -28,7 +29,12 @@ export default async function CatalogoPage() {
   const encomendaPreco = getEncomendaPreco(locale).label;
   const configured = isSupabaseConfigured();
   let tracks: Array<
-    Track & { coverUrl: string | null; downloadsTotal: number; downloads30d: number }
+    Track & {
+      coverUrl: string | null;
+      downloadsTotal: number;
+      downloads30d: number;
+      previewUrl: string | null;
+    }
   > = [];
   let isLoggedIn = false;
   let totalDownloads = 0;
@@ -83,6 +89,10 @@ export default async function CatalogoPage() {
     }
     totalDownloads = downloadsData?.length ?? 0;
 
+    const previewMap = await assinarPreviews(
+      (tracksData ?? []).map((t) => t.audio_path)
+    );
+
     tracks = ((tracksData ?? []) as Track[]).map((track) => ({
       ...track,
       coverUrl: track.cover_path
@@ -91,6 +101,7 @@ export default async function CatalogoPage() {
         : null,
       downloadsTotal: totalPorTrack.get(track.id) ?? 0,
       downloads30d: recentesPorTrack.get(track.id) ?? 0,
+      previewUrl: previewMap[track.audio_path] ?? null,
     }));
   }
 

@@ -14,6 +14,7 @@ interface TrackWithExtras extends Track {
   coverUrl: string | null;
   downloadsTotal: number;
   downloads30d: number;
+  previewUrl?: string | null;
 }
 
 type Ordenacao = "recentes" | "mais_baixadas" | "em_alta";
@@ -398,6 +399,7 @@ function TrackCard({
             brand: track.brand,
             coverUrl: track.coverUrl,
             audioPath: track.audio_path,
+            previewUrl: track.previewUrl,
           }}
           full
           compact
@@ -465,6 +467,7 @@ function TrackRow({
             brand: track.brand,
             coverUrl: track.coverUrl,
             audioPath: track.audio_path,
+            previewUrl: track.previewUrl,
           }}
           className="shrink-0"
         />

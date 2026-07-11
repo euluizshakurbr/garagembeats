@@ -12,6 +12,7 @@ import FavoriteButton from "@/components/FavoriteButton";
 import ShareButton from "@/components/ShareButton";
 import { createClient } from "@/lib/supabase/server";
 import { getEncomendaPreco } from "@/lib/plans";
+import { assinarPreviews } from "@/lib/previewUrls";
 import type { Track } from "@/lib/types";
 
 const getTrack = cache(async (slugOrId: string) => {
@@ -150,6 +151,8 @@ export default async function MusicaPage({
   const duracao = formatDuracao(track.duration_seconds);
   const total = downloadsTotal ?? 0;
   const encomendaPreco = getEncomendaPreco(locale).label;
+  const previewMap = await assinarPreviews([track.audio_path]);
+  const previewUrl = previewMap[track.audio_path] ?? null;
 
   return (
     <div className="flex flex-1 flex-col">
@@ -222,6 +225,7 @@ export default async function MusicaPage({
                     brand: track.brand,
                     coverUrl: cover,
                     audioPath: track.audio_path,
+                    previewUrl,
                   }}
                   full
                 />
