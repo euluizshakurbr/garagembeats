@@ -1,8 +1,12 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
+import Cropper from "react-easy-crop";
 import { editarMusica, excluirMusica } from "@/app/[locale]/admin/actions";
+import { createClient } from "@/lib/supabase/client";
 import { ESTILOS } from "@/lib/estilos";
+import { compressImage } from "@/lib/compressImage";
+import { getCroppedImage, type Area } from "@/lib/cropImage";
 
 interface AdminTrack {
   id: string;
@@ -22,17 +26,78 @@ export default function AdminTrackItem({ track }: { track: AdminTrack }) {
   const [brand, setBrand] = useState(track.brand);
   const [estilo, setEstilo] = useState(track.estilo ?? "");
 
+  // Troca de capa (opcional) — reusa o mesmo recorte do upload.
+  const [coverSrc, setCoverSrc] = useState<string | null>(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedArea, setCroppedArea] = useState<Area | null>(null);
+
+  function handleCoverChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (coverSrc) URL.revokeObjectURL(coverSrc);
+    if (!file) {
+      setCoverSrc(null);
+      return;
+    }
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    setCroppedArea(null);
+    setCoverSrc(URL.createObjectURL(file));
+  }
+
+  function limparCapa() {
+    if (coverSrc) URL.revokeObjectURL(coverSrc);
+    setCoverSrc(null);
+    setCroppedArea(null);
+  }
+
+  function fecharEdicao() {
+    limparCapa();
+    setEditing(false);
+    setErro("");
+  }
+
   async function salvar(event: FormEvent) {
     event.preventDefault();
     setBusy(true);
     setErro("");
-    const result = await editarMusica(track.id, { title, brand, estilo });
+
+    // Se escolheu uma capa nova, recorta, comprime e sobe pro Storage.
+    let coverPath: string | undefined;
+    if (coverSrc && croppedArea) {
+      try {
+        const supabase = createClient();
+        const recortada = await getCroppedImage(coverSrc, croppedArea);
+        const comprimida = await compressImage(recortada);
+        const path = `${crypto.randomUUID()}.jpg`;
+        const { error: coverError } = await supabase.storage
+          .from("tracks-covers")
+          .upload(path, comprimida);
+        if (coverError) {
+          setBusy(false);
+          setErro(`Falha ao enviar a capa: ${coverError.message}`);
+          return;
+        }
+        coverPath = path;
+      } catch {
+        setBusy(false);
+        setErro("Falha ao processar a capa.");
+        return;
+      }
+    }
+
+    const result = await editarMusica(track.id, {
+      title,
+      brand,
+      estilo,
+      coverPath,
+    });
     setBusy(false);
     if (result.error) {
       setErro(result.error);
       return;
     }
-    setEditing(false);
+    fecharEdicao();
   }
 
   async function excluir() {
@@ -79,6 +144,73 @@ export default function AdminTrackItem({ track }: { track: AdminTrack }) {
             ))}
           </select>
         </div>
+
+        {/* Capa */}
+        <div className="flex flex-col gap-2 rounded-xl border border-[#1a1a1a] bg-[#0A0A0A] p-3">
+          <p className="text-sm font-medium text-white">Capa</p>
+          <div className="flex items-center gap-3">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-[#1a0000] to-[#3a0a0a]">
+              {track.coverUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={track.coverUrl}
+                  alt={track.title}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <span className="text-[10px] text-[#555]">sem capa</span>
+              )}
+            </div>
+            <div className="min-w-0 flex-1">
+              <label className="text-xs text-[#888]">
+                Trocar capa (opcional)
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleCoverChange}
+                className={`${inputClass} mt-1`}
+              />
+            </div>
+          </div>
+
+          {coverSrc && (
+            <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <div className="relative aspect-square w-full max-w-[200px] overflow-hidden rounded-xl border border-[#1a1a1a] bg-[#0A0A0A]">
+                <Cropper
+                  image={coverSrc}
+                  crop={crop}
+                  zoom={zoom}
+                  aspect={1}
+                  showGrid={false}
+                  onCropChange={setCrop}
+                  onZoomChange={setZoom}
+                  onCropComplete={(_, area) => setCroppedArea(area)}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs text-[#888]">Zoom</label>
+                <input
+                  type="range"
+                  min={1}
+                  max={3}
+                  step={0.05}
+                  value={zoom}
+                  onChange={(e) => setZoom(Number(e.target.value))}
+                  className="w-full max-w-[200px] accent-[#CC1111]"
+                />
+                <button
+                  type="button"
+                  onClick={limparCapa}
+                  className="w-fit text-xs text-[#888] underline-offset-2 hover:text-white hover:underline"
+                >
+                  Cancelar troca
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
         {erro && <p className="text-sm text-[#CC1111]">{erro}</p>}
         <div className="flex gap-2">
           <button
@@ -90,10 +222,7 @@ export default function AdminTrackItem({ track }: { track: AdminTrack }) {
           </button>
           <button
             type="button"
-            onClick={() => {
-              setEditing(false);
-              setErro("");
-            }}
+            onClick={fecharEdicao}
             className="rounded-lg border border-[#333] px-4 py-2 text-sm font-semibold text-[#888] hover:text-white"
           >
             Cancelar

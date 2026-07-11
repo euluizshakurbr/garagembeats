@@ -79,7 +79,12 @@ export async function subirMusica(data: NovaMusica) {
 // Edita os metadados de uma música (título, marca, estilo).
 export async function editarMusica(
   trackId: string,
-  dados: { title: string; brand: string; estilo: string }
+  dados: {
+    title: string;
+    brand: string;
+    estilo: string;
+    coverPath?: string | null;
+  }
 ) {
   const supabase = await createClient();
   const { data: userData } = await supabase.auth.getUser();
@@ -91,17 +96,37 @@ export async function editarMusica(
   }
 
   const admin = createAdminClient();
+
+  const updateData: Record<string, unknown> = {
+    title: dados.title.trim(),
+    brand: dados.brand.trim(),
+    estilo: dados.estilo || null,
+  };
+
+  // Se veio uma capa nova, guarda a antiga pra apagar depois da atualização.
+  let capaAntiga: string | null = null;
+  if (dados.coverPath) {
+    const { data: atual } = await admin
+      .from("tracks")
+      .select("cover_path")
+      .eq("id", trackId)
+      .maybeSingle();
+    capaAntiga = (atual?.cover_path as string | null) ?? null;
+    updateData.cover_path = dados.coverPath;
+  }
+
   const { error } = await admin
     .from("tracks")
-    .update({
-      title: dados.title.trim(),
-      brand: dados.brand.trim(),
-      estilo: dados.estilo || null,
-    })
+    .update(updateData)
     .eq("id", trackId);
 
   if (error) {
     return { error: "Não foi possível salvar as alterações." };
+  }
+
+  // Remove a capa antiga do Storage (se trocou e havia uma diferente).
+  if (dados.coverPath && capaAntiga && capaAntiga !== dados.coverPath) {
+    await admin.storage.from("tracks-covers").remove([capaAntiga]);
   }
 
   revalidatePath("/catalogo");
