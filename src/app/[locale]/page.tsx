@@ -60,8 +60,6 @@ export default async function Home() {
   let isLoggedIn = false;
   const tracks: Track[] = [];
   let getCoverUrl = (_path: string) => "";
-  let totalTracks = 0;
-  let totalDownloads = 0;
 
   if (isSupabaseConfigured()) {
     const supabase = await createClient();
@@ -78,14 +76,6 @@ export default async function Home() {
     getCoverUrl = (path: string) =>
       supabase.storage.from("tracks-covers").getPublicUrl(path).data
         .publicUrl;
-
-    const [{ count: tracksCount }, { count: downloadsCount }] =
-      await Promise.all([
-        supabase.from("tracks").select("id", { count: "exact", head: true }),
-        supabase.from("downloads").select("id", { count: "exact", head: true }),
-      ]);
-    totalTracks = tracksCount ?? 0;
-    totalDownloads = downloadsCount ?? 0;
   }
 
   return (
@@ -196,16 +186,6 @@ export default async function Home() {
                 {t("alcanceLinha")}
               </p>
               <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
-                {totalTracks >= 30 && (
-                  <ProofPill>
-                    {totalTracks} {t("statTrilhas")}
-                  </ProofPill>
-                )}
-                {totalDownloads >= 500 && (
-                  <ProofPill>
-                    {totalDownloads} {t("statDownloads")}
-                  </ProofPill>
-                )}
                 <ProofPill>{t("beneficioCopyright")}</ProofPill>
                 <ProofPill>{t("beneficioPrevia")}</ProofPill>
                 <ProofPill>{t("beneficioNovas")}</ProofPill>
