@@ -191,10 +191,25 @@ export default async function Home() {
             </p>
 
             {/* Stats */}
-            <div className="mt-16 flex flex-wrap justify-center gap-8 border-t border-[#1a1a1a] pt-12">
-              <Stat value={String(totalTracks)} label={t("statTrilhas")} />
-              <Stat value={String(totalDownloads)} label={t("statDownloads")} />
-              <Stat value="100%" label={t("statCopyright")} />
+            <div className="mt-16 border-t border-[#1a1a1a] pt-12">
+              <p className="text-center text-base font-semibold text-white sm:text-lg">
+                {t("alcanceLinha")}
+              </p>
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
+                {totalTracks >= 30 && (
+                  <ProofPill>
+                    {totalTracks} {t("statTrilhas")}
+                  </ProofPill>
+                )}
+                {totalDownloads >= 500 && (
+                  <ProofPill>
+                    {totalDownloads} {t("statDownloads")}
+                  </ProofPill>
+                )}
+                <ProofPill>{t("beneficioCopyright")}</ProofPill>
+                <ProofPill>{t("beneficioPrevia")}</ProofPill>
+                <ProofPill>{t("beneficioNovas")}</ProofPill>
+              </div>
             </div>
           </div>
         </section>
@@ -338,12 +353,11 @@ export default async function Home() {
   );
 }
 
-function Stat({ value, label }: { value: string; label: string }) {
+function ProofPill({ children }: { children: React.ReactNode }) {
   return (
-    <div className="text-center">
-      <div className="text-3xl font-black text-white">{value}</div>
-      <div className="mt-1 text-sm text-[#555]">{label}</div>
-    </div>
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-[#1a1a1a] bg-[#111] px-4 py-2 text-sm text-[#ccc]">
+      <span className="text-[#CC1111]">●</span> {children}
+    </span>
   );
 }
 
