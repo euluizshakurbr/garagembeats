@@ -173,7 +173,9 @@
     "senhaAtualizada": "Pronto! Sua senha foi alterada e você já está logado.",
     "irParaConta": "Ir para minha conta",
     "erroSenhasDiferentes": "As senhas não são iguais.",
-    "erroLinkInvalido": "Este link é inválido ou expirou. Peça um novo link de redefinição."
+    "erroLinkInvalido": "Este link é inválido ou expirou. Peça um novo link de redefinição.",
+    "continuarGoogle": "Continuar com Google",
+    "ouEmail": "ou continue com e-mail"
   },
   "estilos": {
     "sertanejo": "Sertanejo",

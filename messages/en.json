@@ -173,7 +173,9 @@
     "senhaAtualizada": "Done! Your password has been changed and you're already logged in.",
     "irParaConta": "Go to my account",
     "erroSenhasDiferentes": "The passwords don't match.",
-    "erroLinkInvalido": "This link is invalid or has expired. Request a new reset link."
+    "erroLinkInvalido": "This link is invalid or has expired. Request a new reset link.",
+    "continuarGoogle": "Continue with Google",
+    "ouEmail": "or continue with email"
   },
   "estilos": {
     "sertanejo": "Sertanejo",
