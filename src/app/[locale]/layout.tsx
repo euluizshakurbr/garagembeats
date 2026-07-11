@@ -48,6 +48,7 @@ export async function generateMetadata({
     ),
     title: { default: title, template: "%s | Garagem Beats" },
     description,
+    verification: { google: "FSQ8GI-gXbSkDL8ZrBhpWrzccaiwXlazu18O1ec8WCo" },
     openGraph: {
       type: "website",
       siteName: "Garagem Beats",
