@@ -370,16 +370,18 @@ function TrackCard({
       </div>
       <Link
         href={{ pathname: "/musica/[id]", params: { id: track.slug ?? track.id } }}
-        className="mt-3 line-clamp-2 block text-sm font-semibold text-white transition-colors hover:text-[#CC1111]"
+        className="mt-3 line-clamp-2 block min-h-[2.75rem] text-sm font-semibold text-white transition-colors hover:text-[#CC1111]"
       >
         {track.title}
       </Link>
-      <div className="mt-1.5 flex flex-wrap items-center gap-1">
-        <Tag>{track.brand}</Tag>
+      <div className="mt-1.5 flex items-center gap-1 overflow-hidden">
+        <span className="shrink-0 rounded-full border border-[#2a2a2a] bg-[#1a1a1a] px-2 py-0.5 text-[11px] text-[#888]">
+          {track.brand}
+        </span>
         {track.estilo && (
-          <Tag>
+          <span className="min-w-0 truncate rounded-full border border-[#2a2a2a] bg-[#1a1a1a] px-2 py-0.5 text-[11px] text-[#888]">
             <EstiloLabel value={track.estilo} />
-          </Tag>
+          </span>
         )}
       </div>
       <div className="mt-auto flex flex-col gap-2 pt-3">
