@@ -14,3 +14,12 @@ export function localizedPath(canonical: string, locale: string): string {
   }
   return `/${locale}${slug === "/" ? "" : slug}`;
 }
+
+// Resolve o parâmetro ?next= para um caminho final. Aceita tanto uma rota
+// canônica ("/catalogo") quanto um caminho já localizado ("/pt/musica/x") —
+// este último é usado pra devolver a pessoa exatamente pra onde ela estava.
+export function resolveNext(next: string | undefined, locale: string): string {
+  if (!next) return localizedPath("/conta", locale);
+  if (/^\/(pt|en)(\/|$)/.test(next)) return next;
+  return localizedPath(next, locale);
+}

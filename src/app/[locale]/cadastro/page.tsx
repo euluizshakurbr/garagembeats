@@ -2,12 +2,17 @@ import { Link } from "@/i18n/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import AuthForm from "@/components/AuthForm";
 import SiteHeader from "@/components/SiteHeader";
-import { localizedPath } from "@/i18n/paths";
+import { resolveNext } from "@/i18n/paths";
 
-export default async function CadastroPage() {
+export default async function CadastroPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string }>;
+}) {
+  const { next } = await searchParams;
   const t = await getTranslations("auth");
   const locale = await getLocale();
-  const redirectTo = localizedPath("/conta", locale);
+  const redirectTo = resolveNext(next, locale);
 
   return (
     <div className="flex flex-1 flex-col">

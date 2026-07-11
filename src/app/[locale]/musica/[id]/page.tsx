@@ -11,6 +11,7 @@ import TrackDownloadButton from "@/components/TrackDownloadButton";
 import FavoriteButton from "@/components/FavoriteButton";
 import ShareButton from "@/components/ShareButton";
 import { createClient } from "@/lib/supabase/server";
+import { getEncomendaPreco } from "@/lib/plans";
 import type { Track } from "@/lib/types";
 
 const getTrack = cache(async (slugOrId: string) => {
@@ -79,6 +80,7 @@ export default async function MusicaPage({
 }) {
   const { id } = await params;
   const t = await getTranslations("catalogo");
+  const locale = await getLocale();
   const track = await getTrack(id);
   if (!track) notFound();
 
@@ -113,6 +115,7 @@ export default async function MusicaPage({
   const cover = coverUrlDe(track);
   const duracao = formatDuracao(track.duration_seconds);
   const total = downloadsTotal ?? 0;
+  const encomendaPreco = getEncomendaPreco(locale).label;
 
   return (
     <div className="flex flex-1 flex-col">
@@ -139,7 +142,8 @@ export default async function MusicaPage({
           </Link>
 
           <div className="mt-6 flex flex-col gap-6 sm:flex-row">
-            <div className="relative aspect-square w-full max-w-[260px] shrink-0 self-center overflow-hidden rounded-2xl bg-gradient-to-br from-[#1a0000] to-[#3a0a0a] sm:self-start">
+            <div className="flex w-full max-w-[260px] shrink-0 flex-col gap-2 self-center sm:self-start">
+            <div className="relative aspect-square w-full overflow-hidden rounded-2xl bg-gradient-to-br from-[#1a0000] to-[#3a0a0a]">
               {cover ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={cover} alt={track.title} className="h-full w-full object-cover" />
@@ -164,21 +168,24 @@ export default async function MusicaPage({
                 />
               </div>
             </div>
+            <p className="text-center text-xs text-[#555]">{t("ouvirPrevia")}</p>
+            </div>
 
             <div className="min-w-0 flex-1">
               <h1 className="text-2xl font-bold text-white sm:text-3xl">
                 {track.title}
               </h1>
-              <div className="mt-2 flex flex-wrap items-center gap-2">
+
+              <p className="mt-2 flex items-center gap-1.5 text-xs text-[#888]">
+                <span className="text-[#CC1111]">●</span> {t("trilhaOriginal")}
+              </p>
+
+              <div className="mt-3 flex flex-wrap items-center gap-2">
                 <span className="rounded-full border border-[#2a2a2a] bg-[#1a1a1a] px-2.5 py-0.5 text-xs text-[#888]">
                   {track.brand}
                 </span>
-                {track.estilo && (
-                  <EstiloTag value={track.estilo} />
-                )}
-                {duracao && (
-                  <span className="text-xs text-[#555]">{duracao}</span>
-                )}
+                {track.estilo && <EstiloTag value={track.estilo} />}
+                {duracao && <span className="text-xs text-[#555]">{duracao}</span>}
                 {total > 0 && (
                   <span className="text-xs text-[#555]">
                     · {total} {total === 1 ? t("download") : t("downloads")}
@@ -186,23 +193,58 @@ export default async function MusicaPage({
                 )}
               </div>
 
-              <p className="mt-4 text-sm text-[#888]">
-                {t("inclusoNaAssinatura")}
-              </p>
-
-              <div className="mt-5 flex items-center gap-2">
+              {/* CTA principal */}
+              <div className="mt-6">
                 <TrackDownloadButton
                   trackId={track.id}
                   audioPath={track.audio_path}
                   title={track.title}
                   isLoggedIn={isLoggedIn}
+                  full
+                  label={t("baixarEssa")}
                 />
+                {!isLoggedIn && (
+                  <p className="mt-2 text-center text-xs text-[#888]">
+                    {t("criarContaBaixar")}
+                  </p>
+                )}
+              </div>
+
+              {/* Ações */}
+              <div className="mt-4 flex items-center justify-center gap-2 sm:justify-start">
                 <FavoriteButton
                   trackId={track.id}
                   initialFavorited={isFavorited}
                   isLoggedIn={isLoggedIn}
                 />
                 <ShareButton trackId={track.slug ?? track.id} />
+              </div>
+
+              {/* Quer todas as trilhas? */}
+              <Link
+                href="/planos"
+                className="mt-5 block text-center text-sm text-[#888] transition-colors hover:text-white sm:text-left"
+              >
+                {t("quererTodasTrilhas")}{" "}
+                <span className="font-semibold text-white underline underline-offset-2">
+                  {t("verPlanos")}
+                </span>
+              </Link>
+
+              {/* Upsell: música personalizada */}
+              <div className="mt-6 rounded-2xl border border-[#CC1111]/30 bg-gradient-to-b from-[#1a0808] to-[#111] p-4">
+                <p className="font-semibold text-white">
+                  {t("upsellEncomendaTitulo")}
+                </p>
+                <p className="mt-1 text-sm text-[#888]">
+                  {t("upsellEncomendaDesc", { preco: encomendaPreco })}
+                </p>
+                <Link
+                  href="/encomenda"
+                  className="mt-3 inline-flex rounded-xl border border-[#333] px-4 py-2 text-sm font-semibold text-white transition-colors hover:border-[#555]"
+                >
+                  {t("encomendarAgora")}
+                </Link>
               </div>
             </div>
           </div>

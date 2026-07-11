@@ -2,7 +2,7 @@ import { Link } from "@/i18n/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import AuthForm from "@/components/AuthForm";
 import SiteHeader from "@/components/SiteHeader";
-import { localizedPath } from "@/i18n/paths";
+import { resolveNext } from "@/i18n/paths";
 
 export default async function LoginPage({
   searchParams,
@@ -12,7 +12,7 @@ export default async function LoginPage({
   const { next } = await searchParams;
   const t = await getTranslations("auth");
   const locale = await getLocale();
-  const redirectTo = localizedPath(next || "/conta", locale);
+  const redirectTo = resolveNext(next, locale);
 
   return (
     <div className="flex flex-1 flex-col">
