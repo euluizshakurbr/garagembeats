@@ -226,6 +226,7 @@ export default async function Home() {
                       }
                       audioPath={track.audio_path}
                       previewUrl={previewMap[track.audio_path] ?? null}
+                      slug={track.slug ?? track.id}
                       inclusoLabel={t("inclusoAssinatura")}
                     />
                   ))
@@ -331,6 +332,7 @@ function TrackCard({
   coverUrl,
   audioPath,
   previewUrl,
+  slug,
   inclusoLabel,
 }: {
   title: string;
@@ -339,10 +341,11 @@ function TrackCard({
   coverUrl?: string | null;
   audioPath?: string;
   previewUrl?: string | null;
+  slug?: string;
   inclusoLabel: string;
 }) {
   return (
-    <div className="flex flex-col overflow-hidden rounded-2xl border border-[#1a1a1a] bg-[#111] transition-colors hover:border-[#CC1111]">
+    <div className="group flex flex-col overflow-hidden rounded-2xl border border-[#1a1a1a] bg-[#111] transition-colors hover:border-[#CC1111]">
       <div
         className={`relative flex aspect-square items-center justify-center bg-gradient-to-br ${gradient} overflow-hidden`}
       >
@@ -352,7 +355,7 @@ function TrackCard({
             src={coverUrl}
             alt={title}
             loading="lazy"
-            className="absolute inset-0 h-full w-full object-cover"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
           <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
@@ -369,26 +372,43 @@ function TrackCard({
           </svg>
         )}
 
+        {slug && (
+          <Link
+            href={{ pathname: "/musica/[id]", params: { id: slug } }}
+            aria-label={title}
+            className="absolute inset-0 z-10"
+          />
+        )}
+
         {audioPath && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-            <TrackPreviewPlayer
-              track={{
-                id: audioPath,
-                title,
-                brand,
-                coverUrl: coverUrl ?? null,
-                audioPath,
-                previewUrl,
-              }}
-            />
+          <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-black/30">
+            <div className="pointer-events-auto">
+              <TrackPreviewPlayer
+                track={{
+                  id: audioPath,
+                  title,
+                  brand,
+                  coverUrl: coverUrl ?? null,
+                  audioPath,
+                  previewUrl,
+                }}
+              />
+            </div>
           </div>
         )}
       </div>
       <div className="flex flex-1 flex-col gap-2 p-3">
         <div>
-          <p className="text-sm font-bold leading-tight text-white">
-            {title}
-          </p>
+          {slug ? (
+            <Link
+              href={{ pathname: "/musica/[id]", params: { id: slug } }}
+              className="text-sm font-bold leading-tight text-white transition-colors hover:text-[#CC1111]"
+            >
+              {title}
+            </Link>
+          ) : (
+            <p className="text-sm font-bold leading-tight text-white">{title}</p>
+          )}
           <span className="mt-1 inline-block rounded-full border border-[#2a2a2a] bg-[#1a1a1a] px-2 py-0.5 text-[11px] text-[#888]">
             {brand}
           </span>
