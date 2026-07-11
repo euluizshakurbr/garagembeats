@@ -318,8 +318,8 @@ function TrackCard({
   return (
     <div
       ref={highlightRef}
-      className={`flex flex-col rounded-2xl border bg-[#111] p-4 transition-colors ${
-        isDestacada ? "border-[#CC1111]" : "border-[#1a1a1a]"
+      className={`group flex flex-col rounded-2xl border bg-[#111] p-4 transition-colors ${
+        isDestacada ? "border-[#CC1111]" : "border-[#1a1a1a] hover:border-[#333]"
       }`}
     >
       <div className="relative flex aspect-square items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-[#1a0000] to-[#3a0a0a]">
@@ -329,7 +329,7 @@ function TrackCard({
             src={track.coverUrl}
             alt={track.title}
             loading="lazy"
-            className="absolute inset-0 h-full w-full object-cover"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
           <CoverFallbackIcon />
@@ -341,21 +341,6 @@ function TrackCard({
           aria-label={track.title}
           className="absolute inset-0 z-10"
         />
-
-        {/* Play da prévia fica por cima da capa, sem navegar */}
-        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-black/30">
-          <div className="pointer-events-auto">
-            <TrackPreviewPlayer
-              track={{
-                id: track.id,
-                title: track.title,
-                brand: track.brand,
-                coverUrl: track.coverUrl,
-                audioPath: track.audio_path,
-              }}
-            />
-          </div>
-        </div>
 
         <div className="pointer-events-none absolute top-2 left-2 z-20 flex flex-col gap-1">
           {isNovo && <Badge color="#CC1111">{t("novo")}</Badge>}
@@ -397,13 +382,23 @@ function TrackCard({
           </Tag>
         )}
       </div>
-      <div className="mt-auto pt-3">
+      <div className="mt-auto flex flex-col gap-2 pt-3">
         {track.downloadsTotal > 0 && (
-          <p className="mb-2 text-[11px] text-[#555]">
+          <p className="text-[11px] text-[#555]">
             {track.downloadsTotal}{" "}
             {track.downloadsTotal === 1 ? t("download") : t("downloads")}
           </p>
         )}
+        <TrackPreviewPlayer
+          track={{
+            id: track.id,
+            title: track.title,
+            brand: track.brand,
+            coverUrl: track.coverUrl,
+            audioPath: track.audio_path,
+          }}
+          full
+        />
         <TrackDownloadButton
           trackId={track.id}
           audioPath={track.audio_path}
