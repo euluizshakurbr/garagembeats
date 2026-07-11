@@ -13,6 +13,7 @@ import ShareButton from "@/components/ShareButton";
 import { createClient } from "@/lib/supabase/server";
 import { getEncomendaPreco } from "@/lib/plans";
 import { assinarPreviews } from "@/lib/previewUrls";
+import { brandsOf } from "@/lib/brands";
 import type { Track } from "@/lib/types";
 
 const getTrack = cache(async (slugOrId: string) => {
@@ -204,9 +205,14 @@ export default async function MusicaPage({
               </p>
 
               <div className="mt-3 flex flex-wrap items-center gap-2">
-                <span className="rounded-full border border-[#2a2a2a] bg-[#1a1a1a] px-2.5 py-0.5 text-xs text-[#888]">
-                  {track.brand}
-                </span>
+                {brandsOf(track).map((b) => (
+                  <span
+                    key={b}
+                    className="rounded-full border border-[#2a2a2a] bg-[#1a1a1a] px-2.5 py-0.5 text-xs text-[#888]"
+                  >
+                    {b}
+                  </span>
+                ))}
                 {track.estilo && <EstiloTag value={track.estilo} />}
                 {duracao && <span className="text-xs text-[#555]">{duracao}</span>}
                 {total > 0 && (

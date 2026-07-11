@@ -7,23 +7,30 @@ import { createClient } from "@/lib/supabase/client";
 import { ESTILOS } from "@/lib/estilos";
 import { compressImage } from "@/lib/compressImage";
 import { getCroppedImage, type Area } from "@/lib/cropImage";
+import BrandSelector from "@/components/BrandSelector";
 
 interface AdminTrack {
   id: string;
   title: string;
-  brand: string;
+  brands: string[];
   estilo: string | null;
   coverUrl: string | null;
 }
 
-export default function AdminTrackItem({ track }: { track: AdminTrack }) {
+export default function AdminTrackItem({
+  track,
+  brandOptions,
+}: {
+  track: AdminTrack;
+  brandOptions: string[];
+}) {
   const [editing, setEditing] = useState(false);
   const [confirmando, setConfirmando] = useState(false);
   const [busy, setBusy] = useState(false);
   const [erro, setErro] = useState("");
 
   const [title, setTitle] = useState(track.title);
-  const [brand, setBrand] = useState(track.brand);
+  const [brands, setBrands] = useState<string[]>(track.brands);
   const [estilo, setEstilo] = useState(track.estilo ?? "");
 
   // Troca de capa (opcional) — reusa o mesmo recorte do upload.
@@ -88,7 +95,7 @@ export default function AdminTrackItem({ track }: { track: AdminTrack }) {
 
     const result = await editarMusica(track.id, {
       title,
-      brand,
+      brands,
       estilo,
       coverPath,
     });
@@ -118,17 +125,11 @@ export default function AdminTrackItem({ track }: { track: AdminTrack }) {
         onSubmit={salvar}
         className="flex flex-col gap-3 rounded-2xl border border-[#CC1111]/40 bg-[#111] p-4"
       >
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2">
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Título"
-            className={inputClass}
-          />
-          <input
-            value={brand}
-            onChange={(e) => setBrand(e.target.value)}
-            placeholder="Marca"
             className={inputClass}
           />
           <select
@@ -143,6 +144,15 @@ export default function AdminTrackItem({ track }: { track: AdminTrack }) {
               </option>
             ))}
           </select>
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs text-[#888]">Marca(s)</label>
+          <BrandSelector
+            value={brands}
+            onChange={setBrands}
+            options={brandOptions}
+          />
         </div>
 
         {/* Capa */}
@@ -255,7 +265,7 @@ export default function AdminTrackItem({ track }: { track: AdminTrack }) {
       <div className="min-w-0 flex-1">
         <p className="truncate font-semibold text-white">{track.title}</p>
         <p className="truncate text-xs text-[#888]">
-          {track.brand}
+          {track.brands.join(" · ")}
           {track.estilo ? ` · ${track.estilo}` : ""}
         </p>
         {erro && <p className="mt-1 text-xs text-[#CC1111]">{erro}</p>}

@@ -4,6 +4,7 @@ import AdminNav from "@/components/AdminNav";
 import AdminUpload from "@/components/AdminUpload";
 import AdminTrackItem from "@/components/AdminTrackItem";
 import { createClient } from "@/lib/supabase/server";
+import { brandsOf } from "@/lib/brands";
 import type { Track } from "@/lib/types";
 
 export default async function AdminPage() {
@@ -16,10 +17,13 @@ export default async function AdminPage() {
     .order("created_at", { ascending: false });
   const tracks = (data ?? []) as Track[];
 
+  // Marcas que já existem — alimentam o seletor (aprende sozinho).
+  const brandOptions = [...new Set(tracks.flatMap((t) => brandsOf(t)))].sort();
+
   const items = tracks.map((track) => ({
     id: track.id,
     title: track.title,
-    brand: track.brand,
+    brands: brandsOf(track),
     estilo: track.estilo,
     coverUrl: track.cover_path
       ? supabase.storage.from("tracks-covers").getPublicUrl(track.cover_path)
@@ -38,7 +42,7 @@ export default async function AdminPage() {
           </h1>
           <p className="mt-2 text-[#888]">{t("adicionarTrilha")}</p>
           <div className="mt-8">
-            <AdminUpload />
+            <AdminUpload brandOptions={brandOptions} />
           </div>
 
           <div className="mt-14">
@@ -52,7 +56,11 @@ export default async function AdminPage() {
             ) : (
               <div className="mt-4 flex flex-col gap-3">
                 {items.map((track) => (
-                  <AdminTrackItem key={track.id} track={track} />
+                  <AdminTrackItem
+                    key={track.id}
+                    track={track}
+                    brandOptions={brandOptions}
+                  />
                 ))}
               </div>
             )}

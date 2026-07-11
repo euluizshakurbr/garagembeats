@@ -4,6 +4,7 @@ import { useState, type ChangeEvent } from "react";
 import { subirMusica } from "@/app/[locale]/admin/actions";
 import { createClient } from "@/lib/supabase/client";
 import { ESTILOS } from "@/lib/estilos";
+import BrandSelector from "@/components/BrandSelector";
 
 interface Item {
   file: File;
@@ -11,9 +12,13 @@ interface Item {
   duration: number | null;
 }
 
-export default function BatchUploadForm() {
+export default function BatchUploadForm({
+  brandOptions,
+}: {
+  brandOptions: string[];
+}) {
   const [items, setItems] = useState<Item[]>([]);
-  const [brand, setBrand] = useState("");
+  const [brands, setBrands] = useState<string[]>([]);
   const [estilo, setEstilo] = useState("");
   const [status, setStatus] = useState<"idle" | "uploading" | "done">("idle");
   const [progress, setProgress] = useState({ done: 0, total: 0, fail: 0 });
@@ -56,8 +61,8 @@ export default function BatchUploadForm() {
 
   async function enviarTodas() {
     if (items.length === 0) return;
-    if (!brand.trim()) {
-      setErro("Preencha a marca (vale para todas).");
+    if (brands.length === 0) {
+      setErro("Selecione ao menos uma marca (vale para todas).");
       return;
     }
 
@@ -81,7 +86,7 @@ export default function BatchUploadForm() {
         } else {
           const res = await subirMusica({
             title: item.title.trim() || item.file.name,
-            brand: brand.trim(),
+            brands,
             estilo,
             audioPath,
             coverPath: null,
@@ -105,13 +110,12 @@ export default function BatchUploadForm() {
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium text-white">
-            Marca/tag (para todas)
+            Marca(s)/tag (para todas)
           </label>
-          <input
-            value={brand}
-            onChange={(e) => setBrand(e.target.value)}
-            placeholder="Ex: Volkswagen"
-            className={inputClass}
+          <BrandSelector
+            value={brands}
+            onChange={setBrands}
+            options={brandOptions}
           />
         </div>
         <div className="flex flex-col gap-1.5">

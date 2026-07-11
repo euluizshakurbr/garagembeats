@@ -8,6 +8,7 @@ import TrackPreviewPlayer from "@/components/TrackPreviewPlayer";
 import FavoriteButton from "@/components/FavoriteButton";
 import ShareButton from "@/components/ShareButton";
 import { FlameIcon, ChevronDownIcon, SearchIcon } from "@/components/icons";
+import { brandsOf } from "@/lib/brands";
 import type { Track } from "@/lib/types";
 
 interface TrackWithExtras extends Track {
@@ -45,7 +46,7 @@ export default function CatalogoGrid({
   const highlightRef = useRef<HTMLDivElement>(null);
 
   const brands = useMemo(() => {
-    const unique = Array.from(new Set(tracks.map((t) => t.brand)));
+    const unique = Array.from(new Set(tracks.flatMap((track) => brandsOf(track))));
     return unique.sort();
   }, [tracks]);
 
@@ -73,13 +74,14 @@ export default function CatalogoGrid({
 
   const filtered = tracks
     .filter((track) => {
-      const matchesBrand = brand === "todas" || track.brand === brand;
+      const trackBrands = brandsOf(track);
+      const matchesBrand = brand === "todas" || trackBrands.includes(brand);
       const matchesEstilo = estilo === "todos" || track.estilo === estilo;
       const q = search.trim().toLowerCase();
       const matchesSearch =
         q === "" ||
         track.title.toLowerCase().includes(q) ||
-        track.brand.toLowerCase().includes(q);
+        trackBrands.some((b) => b.toLowerCase().includes(q));
       return matchesBrand && matchesEstilo && matchesSearch;
     })
     .sort((a, b) => {
@@ -376,9 +378,14 @@ function TrackCard({
         {track.title}
       </Link>
       <div className="mt-1.5 flex items-center gap-1 overflow-hidden">
-        <span className="shrink-0 rounded-full border border-[#2a2a2a] bg-[#1a1a1a] px-2 py-0.5 text-[11px] text-[#888]">
-          {track.brand}
-        </span>
+        {brandsOf(track).map((b) => (
+          <span
+            key={b}
+            className="shrink-0 rounded-full border border-[#2a2a2a] bg-[#1a1a1a] px-2 py-0.5 text-[11px] text-[#888]"
+          >
+            {b}
+          </span>
+        ))}
         {track.estilo && (
           <span className="min-w-0 truncate rounded-full border border-[#2a2a2a] bg-[#1a1a1a] px-2 py-0.5 text-[11px] text-[#888]">
             <EstiloLabel value={track.estilo} />
@@ -482,7 +489,9 @@ function TrackRow({
 
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap items-center gap-1">
-          <Tag>{track.brand}</Tag>
+          {brandsOf(track).map((b) => (
+            <Tag key={b}>{b}</Tag>
+          ))}
           {isNovo && <Badge color="#CC1111">{t("novo")}</Badge>}
           {isEmAlta && (
             <Badge color="#E87A00">

@@ -36,7 +36,7 @@ async function isAdmin(
 
 interface NovaMusica {
   title: string;
-  brand: string;
+  brands: string[];
   estilo: string;
   audioPath: string;
   coverPath: string | null;
@@ -49,7 +49,8 @@ interface NovaMusica {
 export async function subirMusica(data: NovaMusica) {
   const supabase = await createClient();
 
-  if (!data.title || !data.brand || !data.audioPath) {
+  const brands = (data.brands ?? []).map((b) => b.trim()).filter(Boolean);
+  if (!data.title || brands.length === 0 || !data.audioPath) {
     return { error: "Preencha todos os campos obrigatórios." };
   }
 
@@ -58,7 +59,8 @@ export async function subirMusica(data: NovaMusica) {
 
   const { error: insertError } = await supabase.from("tracks").insert({
     title: data.title,
-    brand: data.brand,
+    brand: brands[0], // marca principal (compatibilidade e exibição simples)
+    brands,
     estilo: data.estilo || null,
     audio_path: data.audioPath,
     cover_path: data.coverPath,
@@ -81,7 +83,7 @@ export async function editarMusica(
   trackId: string,
   dados: {
     title: string;
-    brand: string;
+    brands: string[];
     estilo: string;
     coverPath?: string | null;
   }
@@ -91,15 +93,17 @@ export async function editarMusica(
   if (!userData.user || !(await isAdmin(supabase, userData.user.id))) {
     return { error: "Sem permissão." };
   }
-  if (!dados.title.trim() || !dados.brand.trim()) {
-    return { error: "Preencha título e marca." };
+  const brands = (dados.brands ?? []).map((b) => b.trim()).filter(Boolean);
+  if (!dados.title.trim() || brands.length === 0) {
+    return { error: "Preencha título e pelo menos uma marca." };
   }
 
   const admin = createAdminClient();
 
   const updateData: Record<string, unknown> = {
     title: dados.title.trim(),
-    brand: dados.brand.trim(),
+    brand: brands[0],
+    brands,
     estilo: dados.estilo || null,
   };
 

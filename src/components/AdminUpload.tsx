@@ -4,7 +4,11 @@ import { useState } from "react";
 import UploadTrackForm from "@/components/UploadTrackForm";
 import BatchUploadForm from "@/components/BatchUploadForm";
 
-export default function AdminUpload() {
+export default function AdminUpload({
+  brandOptions,
+}: {
+  brandOptions: string[];
+}) {
   const [modo, setModo] = useState<"uma" | "lote">("uma");
 
   return (
@@ -26,7 +30,11 @@ export default function AdminUpload() {
         </button>
       </div>
 
-      {modo === "uma" ? <UploadTrackForm /> : <BatchUploadForm />}
+      {modo === "uma" ? (
+        <UploadTrackForm brandOptions={brandOptions} />
+      ) : (
+        <BatchUploadForm brandOptions={brandOptions} />
+      )}
     </div>
   );
 }

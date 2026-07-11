@@ -13,6 +13,7 @@ export interface Track {
   id: string;
   title: string;
   brand: string;
+  brands: string[] | null;
   estilo: string | null;
   audio_path: string;
   cover_path: string | null;

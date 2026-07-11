@@ -7,9 +7,15 @@ import { createClient } from "@/lib/supabase/client";
 import { ESTILOS } from "@/lib/estilos";
 import { compressImage } from "@/lib/compressImage";
 import { getCroppedImage, type Area } from "@/lib/cropImage";
+import BrandSelector from "@/components/BrandSelector";
 
-export default function UploadTrackForm() {
+export default function UploadTrackForm({
+  brandOptions,
+}: {
+  brandOptions: string[];
+}) {
   const formRef = useRef<HTMLFormElement>(null);
+  const [brands, setBrands] = useState<string[]>([]);
   const [status, setStatus] = useState<"idle" | "loading" | "error" | "done">(
     "idle"
   );
@@ -63,13 +69,12 @@ export default function UploadTrackForm() {
 
     const formData = new FormData(event.currentTarget);
     const title = String(formData.get("title") || "");
-    const brand = String(formData.get("brand") || "");
     const estilo = String(formData.get("estilo") || "");
     const audioFile = formData.get("audio") as File | null;
 
-    if (!title || !brand || !audioFile || audioFile.size === 0) {
+    if (!title || brands.length === 0 || !audioFile || audioFile.size === 0) {
       setStatus("error");
-      setErrorMessage("Preencha todos os campos obrigatórios.");
+      setErrorMessage("Preencha o título, ao menos uma marca e o áudio.");
       return;
     }
 
@@ -111,7 +116,7 @@ export default function UploadTrackForm() {
 
     const result = await subirMusica({
       title,
-      brand,
+      brands,
       estilo,
       audioPath,
       coverPath,
@@ -127,6 +132,7 @@ export default function UploadTrackForm() {
     setStatus("done");
     formRef.current?.reset();
     setDuration(null);
+    setBrands([]);
     limparCapa();
   }
 
@@ -147,10 +153,15 @@ export default function UploadTrackForm() {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="brand" className="text-sm font-medium text-white">
-            Marca/tag
-          </label>
-          <input id="brand" name="brand" type="text" required placeholder="Ex: Volkswagen" className={inputClass} />
+          <label className="text-sm font-medium text-white">Marca(s)/tag</label>
+          <BrandSelector
+            value={brands}
+            onChange={setBrands}
+            options={brandOptions}
+          />
+          <p className="text-xs text-[#888]">
+            Escolha uma ou mais (ex: veículo Scania + Volkswagen).
+          </p>
         </div>
 
         <div className="flex flex-col gap-1.5">
