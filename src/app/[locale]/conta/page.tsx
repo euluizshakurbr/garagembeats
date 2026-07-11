@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Link } from "@/i18n/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import SiteHeader from "@/components/SiteHeader";
@@ -167,11 +168,6 @@ export default async function ContaPage({
             />
           </div>
 
-          <PerfilForm
-            nomeInicial={profile.nome ?? ""}
-            whatsappInicial={profile.whatsapp ?? ""}
-          />
-
           {pedido && (
             <>
               <MetaPurchase
@@ -244,13 +240,21 @@ export default async function ContaPage({
                     {formatDate(subscription.current_period_end)}
                   </p>
                 )}
-                <ManageSubscriptionButton
-                  label={
-                    locale === "en"
-                      ? "Manage subscription"
-                      : "Gerenciar assinatura"
-                  }
-                />
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  <Link
+                    href="/catalogo"
+                    className="inline-flex rounded-xl bg-[#CC1111] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#aa0e0e]"
+                  >
+                    {t("verCatalogo")}
+                  </Link>
+                  <ManageSubscriptionButton
+                    label={
+                      locale === "en"
+                        ? "Manage subscription"
+                        : "Gerenciar assinatura"
+                    }
+                  />
+                </div>
               </>
             ) : (
               <>
@@ -286,9 +290,18 @@ export default async function ContaPage({
             </Link>
           </div>
 
-          <h2 className="mt-10 text-lg font-semibold text-white">
+          <SectionTitle
+            count={encomendas.length}
+            icon={
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 18V5l12-2v13" />
+                <circle cx="6" cy="18" r="3" />
+                <circle cx="18" cy="16" r="3" />
+              </svg>
+            }
+          >
             {t("minhasEncomendas")}
-          </h2>
+          </SectionTitle>
 
           {encomendas.length === 0 ? (
             <p className="mt-4 text-[#555]">
@@ -343,9 +356,16 @@ export default async function ContaPage({
             </div>
           )}
 
-          <h2 className="mt-10 text-lg font-semibold text-white">
+          <SectionTitle
+            count={favorites.length}
+            icon={
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.8 1-1a5.5 5.5 0 0 0 0-7.8z" />
+              </svg>
+            }
+          >
             {t("favoritos")}
-          </h2>
+          </SectionTitle>
 
           {favorites.length === 0 ? (
             <p className="mt-4 text-[#555]">
@@ -362,9 +382,12 @@ export default async function ContaPage({
                   className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#1a1a1a] bg-[#111] p-4"
                 >
                   <div className="min-w-0">
-                    <p className="truncate font-medium text-white">
+                    <Link
+                      href={{ pathname: "/musica/[id]", params: { id: favorite.track.slug ?? favorite.track_id } }}
+                      className="block truncate font-medium text-white transition-colors hover:text-[#CC1111]"
+                    >
                       {favorite.track.title}
-                    </p>
+                    </Link>
                     <p className="text-xs text-[#888]">
                       {favorite.track.brand}
                     </p>
@@ -380,9 +403,18 @@ export default async function ContaPage({
             </div>
           )}
 
-          <h2 className="mt-10 text-lg font-semibold text-white">
+          <SectionTitle
+            count={downloads?.length}
+            icon={
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+            }
+          >
             {t("historicoDownloads")}
-          </h2>
+          </SectionTitle>
 
           {!downloads || downloads.length === 0 ? (
             <p className="mt-4 text-[#555]">
@@ -399,9 +431,12 @@ export default async function ContaPage({
                   className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#1a1a1a] bg-[#111] p-4"
                 >
                   <div className="min-w-0">
-                    <p className="truncate font-medium text-white">
+                    <Link
+                      href={{ pathname: "/musica/[id]", params: { id: download.track.slug ?? download.track.id } }}
+                      className="block truncate font-medium text-white transition-colors hover:text-[#CC1111]"
+                    >
                       {download.track.title}
-                    </p>
+                    </Link>
                     <p className="text-xs text-[#888]">
                       {download.track.brand} · {formatDate(download.created_at)}
                     </p>
@@ -414,8 +449,35 @@ export default async function ContaPage({
               ))}
             </div>
           )}
+
+          <div className="mt-12 border-t border-[#1a1a1a] pt-6">
+            <PerfilForm
+              nomeInicial={profile.nome ?? ""}
+              whatsappInicial={profile.whatsapp ?? ""}
+            />
+          </div>
         </div>
       </main>
     </div>
+  );
+}
+
+function SectionTitle({
+  children,
+  count,
+  icon,
+}: {
+  children: ReactNode;
+  count?: number;
+  icon: ReactNode;
+}) {
+  return (
+    <h2 className="mt-10 flex items-center gap-2 text-lg font-semibold text-white">
+      <span className="text-[#CC1111]">{icon}</span>
+      {children}
+      {count ? (
+        <span className="text-sm font-normal text-[#666]">· {count}</span>
+      ) : null}
+    </h2>
   );
 }

@@ -21,7 +21,7 @@ export default function ManageSubscriptionButton({ label }: { label: string }) {
       type="button"
       onClick={handleClick}
       disabled={loading}
-      className="mt-4 inline-flex rounded-xl border border-[#333] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:border-[#555] disabled:opacity-60"
+      className="inline-flex rounded-xl border border-[#333] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:border-[#555] disabled:opacity-60"
     >
       {loading ? "..." : label}
     </button>
