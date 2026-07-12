@@ -42,6 +42,14 @@ export async function generateMetadata({
     ? "Exclusive car-inspired tracks, copyright-free for your videos — or order a 100% custom song for your build."
     : "Compre trilhas exclusivas do catálogo ou peça uma música 100% personalizada inspirada no seu carro.";
 
+  // Imagem que aparece ao compartilhar o link (WhatsApp, Facebook, X, etc.)
+  const ogImage = {
+    url: "/og-image.png",
+    width: 1200,
+    height: 630,
+    alt: "Garagem Beats",
+  };
+
   return {
     metadataBase: new URL(
       process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
@@ -55,8 +63,14 @@ export async function generateMetadata({
       title,
       description,
       locale: isEn ? "en_US" : "pt_BR",
+      images: [ogImage],
     },
-    twitter: { card: "summary_large_image", title, description },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImage.url],
+    },
   };
 }
 
