@@ -101,10 +101,12 @@ export default async function MusicaPage({
     isFavorited = !!fav;
   }
 
-  const { count: downloadsTotal } = await supabase
-    .from("downloads")
-    .select("id", { count: "exact", head: true })
-    .eq("track_id", id);
+  // Contagem agregada no banco — a RLS de `downloads` esconde as linhas dos
+  // outros usuários, então um count direto aqui devolveria sempre zero.
+  const { data: downloadStats } = await supabase.rpc("get_download_stats", {
+    p_track_id: id,
+  });
+  const downloadsTotal = Number(downloadStats?.[0]?.total ?? 0);
 
   // Recomendações: mesma marca primeiro, depois mesmo estilo, e completa com
   // recentes se faltar — pra seção nunca ficar vazia (upsell/descoberta).

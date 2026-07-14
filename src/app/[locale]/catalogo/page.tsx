@@ -11,8 +11,6 @@ import { getEncomendaPreco } from "@/lib/plans";
 import { assinarPreviews } from "@/lib/previewUrls";
 import type { Track } from "@/lib/types";
 
-const TRINTA_DIAS_MS = 30 * 24 * 60 * 60 * 1000;
-
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
   const t = await getTranslations();
@@ -67,27 +65,29 @@ export default async function CatalogoPage() {
       });
     }
 
-    const { data: downloadsData } = await supabase
-      .from("downloads")
-      .select("track_id, created_at");
+    // Contadores agregados direto no banco (função security definer) — a RLS
+    // de `downloads` esconde as linhas dos outros usuários, então contar aqui
+    // no servidor com o client do visitante devolveria sempre zero.
+    const { data: statsData, error: statsError } = await supabase.rpc(
+      "get_download_stats"
+    );
 
-    const agora = Date.now();
+    if (statsError) {
+      console.error("Erro ao buscar stats de downloads no /catalogo:", {
+        message: statsError.message,
+        code: statsError.code,
+        hint: statsError.hint,
+      });
+    }
+
     const totalPorTrack = new Map<string, number>();
     const recentesPorTrack = new Map<string, number>();
 
-    for (const download of downloadsData ?? []) {
-      totalPorTrack.set(
-        download.track_id,
-        (totalPorTrack.get(download.track_id) ?? 0) + 1
-      );
-      if (agora - new Date(download.created_at).getTime() <= TRINTA_DIAS_MS) {
-        recentesPorTrack.set(
-          download.track_id,
-          (recentesPorTrack.get(download.track_id) ?? 0) + 1
-        );
-      }
+    for (const stat of statsData ?? []) {
+      totalPorTrack.set(stat.track_id, Number(stat.total));
+      recentesPorTrack.set(stat.track_id, Number(stat.last_30d));
+      totalDownloads += Number(stat.total);
     }
-    totalDownloads = downloadsData?.length ?? 0;
 
     const previewMap = await assinarPreviews(
       (tracksData ?? []).map((t) => t.audio_path)

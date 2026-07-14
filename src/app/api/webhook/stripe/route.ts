@@ -70,6 +70,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("Erro no webhook do Stripe:", err);
-    return NextResponse.json({ ok: true });
+    // 500 faz o Stripe reenviar o evento depois (retry automático por dias).
+    // Devolver 200 aqui descartaria o evento — assinatura/encomenda paga
+    // poderia ficar sem ativar se o banco falhar neste instante.
+    return NextResponse.json({ error: "Erro interno" }, { status: 500 });
   }
 }
