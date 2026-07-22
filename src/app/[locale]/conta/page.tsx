@@ -92,7 +92,6 @@ export default async function ContaPage({
   const preco = plan ? getPlanPreco(plan, locale) : null;
 
   let downloadsUsed = 0;
-  let freeDownloadAvailable = false;
   if (subscription) {
     const { count } = await supabase
       .from("downloads")
@@ -100,12 +99,6 @@ export default async function ContaPage({
       .eq("user_id", userData.user!.id)
       .gte("created_at", subscription.current_period_start);
     downloadsUsed = count ?? 0;
-  } else {
-    const { count } = await supabase
-      .from("downloads")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", userData.user!.id);
-    freeDownloadAvailable = (count ?? 0) === 0;
   }
 
   const { data: downloads } = await supabase
@@ -259,11 +252,6 @@ export default async function ContaPage({
             ) : (
               <>
                 <p className="font-semibold text-white">{t("semPlanoTitulo")}</p>
-                {freeDownloadAvailable && (
-                  <p className="mt-2 rounded-lg border border-[#CC1111]/40 bg-[#1a0808] px-3 py-2 text-sm font-medium text-white">
-                    {t("gratisDisponivel")}
-                  </p>
-                )}
                 <p className="mt-1 text-sm text-[#888]">{t("semPlanoDesc")}</p>
                 <Link
                   href="/planos"

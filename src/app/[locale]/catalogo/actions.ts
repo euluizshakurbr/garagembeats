@@ -77,15 +77,8 @@ export async function baixarTrack(
         }
       }
     } else {
-      // Sem plano ativo: cada conta tem direito a 1 download grátis vitalício.
-      const { count } = await supabase
-        .from("downloads")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", userData.user.id);
-
-      if ((count ?? 0) >= 1) {
-        return { error: t("limiteGratis"), needsPlan: true };
-      }
+      // Sem plano ativo e sem compra avulsa dessa música: não há download grátis.
+      return { error: t("assineParaBaixar"), needsPlan: true };
     }
   }
 
