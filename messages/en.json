@@ -244,7 +244,12 @@
     "removerFavoritos": "Remove from favorites",
     "compartilhar": "Share",
     "linkCopiado": "Link copied!",
-    "comprarEssaAvulsa": "Or just buy this one for {preco}"
+    "modalTitulo": "How do you want to download this track?",
+    "modalAssinarPlano": "Subscribe to a plan",
+    "modalAssinarPlanoDesc": "Download several tracks per month",
+    "modalComprarAvulsa": "Buy just this track",
+    "modalComprarAvulsaDesc": "{preco}, no subscription needed",
+    "fechar": "Close"
   },
   "conta": {
     "titulo": "My account",

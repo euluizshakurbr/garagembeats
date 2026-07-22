@@ -244,7 +244,12 @@
     "removerFavoritos": "Remover dos favoritos",
     "compartilhar": "Compartilhar",
     "linkCopiado": "Link copiado!",
-    "comprarEssaAvulsa": "Ou compre só essa por {preco}"
+    "modalTitulo": "Como você quer baixar essa música?",
+    "modalAssinarPlano": "Assinar um plano",
+    "modalAssinarPlanoDesc": "Baixe várias músicas por mês",
+    "modalComprarAvulsa": "Comprar só essa música",
+    "modalComprarAvulsaDesc": "{preco}, sem assinar nada",
+    "fechar": "Fechar"
   },
   "conta": {
     "titulo": "Minha conta",
