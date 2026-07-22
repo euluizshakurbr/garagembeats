@@ -242,7 +242,8 @@
     "favoritar": "Favoritar",
     "removerFavoritos": "Remover dos favoritos",
     "compartilhar": "Compartilhar",
-    "linkCopiado": "Link copiado!"
+    "linkCopiado": "Link copiado!",
+    "comprarEssaAvulsa": "Ou compre só essa por {preco}"
   },
   "conta": {
     "titulo": "Minha conta",

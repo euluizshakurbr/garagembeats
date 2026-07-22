@@ -242,7 +242,8 @@
     "favoritar": "Favorite",
     "removerFavoritos": "Remove from favorites",
     "compartilhar": "Share",
-    "linkCopiado": "Link copied!"
+    "linkCopiado": "Link copied!",
+    "comprarEssaAvulsa": "Or just buy this one for {preco}"
   },
   "conta": {
     "titulo": "My account",

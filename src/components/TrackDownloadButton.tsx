@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
-import { baixarTrack } from "@/app/[locale]/catalogo/actions";
+import { useLocale, useTranslations } from "next-intl";
+import { baixarTrack, comprarAvulsa } from "@/app/[locale]/catalogo/actions";
+import { getAvulsaPreco } from "@/lib/plans";
 
 export default function TrackDownloadButton({
   trackId,
@@ -21,9 +22,12 @@ export default function TrackDownloadButton({
   label?: string;
 }) {
   const t = useTranslations("catalogo");
+  const locale = useLocale();
+  const avulsaPreco = getAvulsaPreco(locale).label;
   const router = useRouter();
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const [needsPlan, setNeedsPlan] = useState(false);
 
   async function handleClick() {
     if (!isLoggedIn) {
@@ -39,7 +43,9 @@ export default function TrackDownloadButton({
     const result = await baixarTrack(trackId, audioPath, title);
 
     if (result.needsPlan) {
-      router.push("/planos");
+      setStatus("error");
+      setErrorMessage(result.error!);
+      setNeedsPlan(true);
       return;
     }
 
@@ -51,6 +57,19 @@ export default function TrackDownloadButton({
 
     window.location.href = result.url!;
     setStatus("idle");
+  }
+
+  async function handleComprarAvulsa() {
+    setStatus("loading");
+    const result = await comprarAvulsa(trackId, title);
+
+    if (result.error) {
+      setStatus("error");
+      setErrorMessage(result.error);
+      return;
+    }
+
+    window.location.href = result.checkoutUrl!;
   }
 
   return (
@@ -75,6 +94,17 @@ export default function TrackDownloadButton({
         <span className={`text-[11px] text-[#CC1111] ${full ? "text-center" : "max-w-[140px] text-right"}`}>
           {errorMessage}
         </span>
+      )}
+      {needsPlan && (
+        <button
+          onClick={handleComprarAvulsa}
+          disabled={status === "loading"}
+          className={`text-[11px] font-medium text-[#888] underline underline-offset-2 hover:text-white disabled:opacity-60 ${
+            full ? "text-center" : "text-right"
+          }`}
+        >
+          {t("comprarEssaAvulsa", { preco: avulsaPreco })}
+        </button>
       )}
     </div>
   );

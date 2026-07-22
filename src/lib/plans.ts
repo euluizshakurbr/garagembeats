@@ -70,3 +70,15 @@ export function getEncomendaPreco(locale: string) {
     : { ...ENCOMENDA_PRECO.brl, currency: "brl" as const };
 }
 
+// Compra avulsa (1 música, sem assinatura) — preço fixo, fora dos planos
+export const AVULSA_PRECO = {
+  brl: { cents: 1490, label: "R$14,90" },
+  usd: { cents: 349, label: "US$3.49" },
+};
+
+export function getAvulsaPreco(locale: string) {
+  return locale === "en"
+    ? { ...AVULSA_PRECO.usd, currency: "usd" as const }
+    : { ...AVULSA_PRECO.brl, currency: "brl" as const };
+}
+

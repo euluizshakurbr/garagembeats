@@ -59,6 +59,12 @@ export async function POST(request: Request) {
             .from("encomendas")
             .update({ pagamento_confirmado: true, stripe_payment_id: paymentId })
             .eq("id", session.metadata.encomendaId);
+        } else if (session.metadata?.tipo === "avulsa") {
+          const paymentId = String(session.payment_intent ?? session.id);
+          await supabase
+            .from("compras_avulsas")
+            .update({ pagamento_confirmado: true, stripe_payment_id: paymentId })
+            .eq("id", session.metadata.compraId);
         }
         break;
       }
