@@ -2,9 +2,10 @@
 
 import { createAdminClient } from "@/lib/supabase/admin";
 
-// Preview público (sem exigir login/assinatura) — usa o client admin pra
-// gerar um link de streaming temporário, sem o parâmetro "download", então
-// o áudio toca inline em vez de baixar. O front limita a 60s de reprodução.
+// Streaming público (sem exigir login/assinatura) — usa o client admin pra
+// gerar um link temporário, sem o parâmetro "download", então o áudio toca
+// inline em vez de baixar. A faixa inteira pode ser ouvida; só o download
+// do arquivo exige plano ou compra avulsa.
 export async function gerarPreviewUrl(audioPath: string) {
   const supabase = createAdminClient();
   const { data, error } = await supabase.storage

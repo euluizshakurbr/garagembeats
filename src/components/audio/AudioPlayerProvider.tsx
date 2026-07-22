@@ -10,8 +10,6 @@ import {
 import { gerarPreviewUrl } from "@/app/[locale]/catalogo/preview-actions";
 import MiniPlayer from "./MiniPlayer";
 
-const PREVIEW_SECONDS = 60;
-
 export interface PlayerTrack {
   id: string;
   title: string;
@@ -110,13 +108,9 @@ export default function AudioPlayerProvider({
       }
     });
     audio.addEventListener("timeupdate", () => {
-      if (audio.currentTime >= PREVIEW_SECONDS) {
-        audio.pause();
-        audio.currentTime = 0;
-        setProgress(0);
-        return;
+      if (audio.duration) {
+        setProgress(audio.currentTime / audio.duration);
       }
-      setProgress(audio.currentTime / PREVIEW_SECONDS);
     });
     audio.addEventListener("play", () => setStatus("playing"));
     audio.addEventListener("pause", () =>
